@@ -133,11 +133,11 @@ def test(input:list[int]):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range = 2000
+    epoch_range = 3000
     batches = 512
     hidden_layer_range = 128
     parameter = [epoch_range,batches,hidden_layer_range]
-    minimum_out = {"epoch":1300, "batch":512, "hidden layer":128, "Train Loss":0.0434, "Val Loss":0.0679}
+    minimum_out = {"epoch":2500, "batch":512, "hidden layer":128, "Train Loss":0.0315, "Val Loss":0.0585}
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2]}")
     train_loss, val_loss = test(parameter)
     if train_loss < minimum_out["Train Loss"] and val_loss < minimum_out["Val Loss"]:
