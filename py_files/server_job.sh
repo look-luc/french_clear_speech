@@ -1,10 +1,11 @@
 #SBATCH --time=01:00:00        # Job run time (e.g., 1 hour)
-#SBATCH --qos=normal           # Quality of Service (e.g., normal, preemptable)
-#SBATCH --job-name=regression_model_training # Name of your job
-#SBATCH --nodes=1              # Number of nodes to request
-#SBATCH --ntasks=1             # Number of tasks (cores) per node
-#SBATCH --output=my_python_job.%j.out # Standard output file
-#SBATCH --error=my_python_job.%j.err  # Standard error file
+#SBATCH --qos=blanca-clearlab2  # Quality of Service (e.g., normal, preemptable)
+#SBATCH --account=blanca-clearlab2
+#SBATCH --partition=blanca-clearlab2
+#SBATCH --ntasks-per-node=16
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=regression_model_training
+#SBATCH --export=NONE
 
 # Load the Python module
 module purge
