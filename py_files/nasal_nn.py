@@ -121,7 +121,7 @@ def test(input:tuple):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range: list[int] = [60550]
+    epoch_range: list[int] = [65550]
     batches = [512]
     hidden_layer_range = [128]
     combination = list(itertools.product(epoch_range,batches,hidden_layer_range))
