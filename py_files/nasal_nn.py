@@ -30,12 +30,23 @@ class reg_model(nn.Module):
     def __init__(self, input_features, hidden_layer):
         super(reg_model,self).__init__()
         self.layer1 = nn.Linear(input_features, hidden_layer)
-        self.layer2 = nn.Linear(hidden_layer, 1)
-    
+        self.layer2 = nn.Linear(hidden_layer, hidden_layer//2)
+        self.layer3 = nn.Linear(hidden_layer//2, hidden_layer//4)
+        self.layer4 = nn.Linear(hidden_layer//4, hidden_layer//2)
+        self.layer5 = nn.Linear(hidden_layer//2, hidden_layer//3)
+        self.layer6 = nn.Linear(hidden_layer//3, hidden_layer//2)
+        self.layer7 = nn.Linear(hidden_layer//2, hidden_layer//4)
+        self.layer8 = nn.Linear(hidden_layer//4, 1)
+
     def forward(self, x):
-        x = self.layer1(x)
-        x = F.relu(x)
-        x = self.layer2(x)
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        x = F.relu(self.layer3(x))
+        x = F.relu(self.layer4(x))
+        x = F.relu(self.layer5(x))
+        x = F.relu(self.layer6(x))
+        x = F.relu(self.layer7(x))
+        x = self.layer8(x)
         return x
 
 def string_to_ascii_list(text):
@@ -81,13 +92,13 @@ def test(input:list[int]):
     train_dataset = two_lay_data(X_train, y_train)
     val_dataset = two_lay_data(X_val, y_val)
 
-    train_dataloader = DataLoader(train_dataset, batch_size=input[1], shuffle=True,num_workers=min(4, os.cpu_count()))
-    val_dataloader = DataLoader(val_dataset, batch_size=input[1], shuffle=False,num_workers=min(4, os.cpu_count()))
+    train_dataloader = DataLoader(train_dataset, batch_size=input[1], shuffle=True,num_workers=0)
+    val_dataloader = DataLoader(val_dataset, batch_size=input[1], shuffle=False,num_workers=0)
 
     model = reg_model(input_features=X_train.shape[1], hidden_layer=input[2])
-    if torch.cuda.device_count() > 1:
-        print(f"Using {torch.cuda.device_count()} GPUs!")
-        model = nn.DataParallel(model)
+    # if torch.cuda.device_count() > 1:
+    #     print(f"Using {torch.cuda.device_count()} GPUs!")
+    #     model = nn.DataParallel(model)
     model.to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
@@ -122,11 +133,11 @@ def test(input:list[int]):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range = 50
-    batches = 64
+    epoch_range = 2000
+    batches = 512
     hidden_layer_range = 128
     parameter = [epoch_range,batches,hidden_layer_range]
-    minimum_out = {"epoch":22550, "batch":64, "hidden layer":256, "Train Loss":0.0547, "Val Loss":0.0847}
+    minimum_out = {"epoch":1300, "batch":512, "hidden layer":128, "Train Loss":0.0434, "Val Loss":0.0679}
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2]}")
     train_loss, val_loss = test(parameter)
     if train_loss < minimum_out["Train Loss"] and val_loss < minimum_out["Val Loss"]:
