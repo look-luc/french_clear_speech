@@ -1,4 +1,5 @@
 import itertools
+import os
 from sklearn.preprocessing import StandardScaler
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -42,7 +43,7 @@ def string_to_ascii_list(text):
         return None
     return int("".join([ascii(char) for char in str(text).encode('ascii', errors='replace')]))
 
-def test(input:tuple):
+def test(input:list[int]):
     nasal = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/nasal copy.csv")
     nasal['vowelSAMPA'] = nasal['vowelSAMPA'].apply(string_to_ascii_list)
 
@@ -80,8 +81,8 @@ def test(input:tuple):
     train_dataset = two_lay_data(X_train, y_train)
     val_dataset = two_lay_data(X_val, y_val)
 
-    train_dataloader = DataLoader(train_dataset, batch_size=input[1], shuffle=True,num_workers=0)
-    val_dataloader = DataLoader(val_dataset, batch_size=input[1], shuffle=False,num_workers=0)
+    train_dataloader = DataLoader(train_dataset, batch_size=input[1], shuffle=True,num_workers=min(4, os.cpu_count()))
+    val_dataloader = DataLoader(val_dataset, batch_size=input[1], shuffle=False,num_workers=min(4, os.cpu_count()))
 
     model = reg_model(input_features=X_train.shape[1], hidden_layer=input[2])
     if torch.cuda.device_count() > 1:
@@ -112,7 +113,7 @@ def test(input:tuple):
             inputs, batch_targets = inputs.to(device), batch_targets.to(device)
             outputs = model(inputs)
             loss = criterion(outputs, batch_targets)
-            val_loss += loss.i
+            val_loss += loss
 
     print(f'Epoch {epochs+1}/{num_epochs}, ',
             f'Train Loss: {train_loss / len(train_dataloader):.4f}, ',
@@ -121,17 +122,17 @@ def test(input:tuple):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range: list[int] = [65550]
-    batches = [512]
-    hidden_layer_range = [128]
-    combination = list(itertools.product(epoch_range,batches,hidden_layer_range))
+    epoch_range = 50
+    batches = 64
+    hidden_layer_range = 128
+    parameter = [epoch_range,batches,hidden_layer_range]
     minimum_out = {"epoch":22550, "batch":64, "hidden layer":256, "Train Loss":0.0547, "Val Loss":0.0847}
-    print(f"epoch number: {combination[0][0]} batch: {combination[0][1]} hidden layer: {combination[0][2]}")
-    train_loss, val_loss = test(combination[0])
+    print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2]}")
+    train_loss, val_loss = test(parameter)
     if train_loss < minimum_out["Train Loss"] and val_loss < minimum_out["Val Loss"]:
-        minimum_out["epoch"] = combination[0][0]
-        minimum_out["batch"] = combination[0][1]
-        minimum_out["hidden layer"] = combination[0][2]
+        minimum_out["epoch"] = parameter[0]
+        minimum_out["batch"] = parameter[1]
+        minimum_out["hidden layer"] = parameter[2]
         minimum_out["Train Loss"] = train_loss
         minimum_out["Val Loss"] = val_loss
 
