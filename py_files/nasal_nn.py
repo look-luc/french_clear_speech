@@ -1,5 +1,8 @@
-import itertools
 import os
+os.environ["TOKENIZERS_PARALLELISM"] = "true"
+os.environ["OMP_NUM_THREADS"] = "16"
+os.environ["MKL_NUM_THREADS"] = "16"
+
 from sklearn.preprocessing import StandardScaler
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -7,6 +10,9 @@ import pandas as pd
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
+
+torch.set_num_threads(16)
+torch.set_num_interop_threads(16)
 
 if torch.backends.mps.is_available():
     device = torch.device("mps")
@@ -33,20 +39,14 @@ class reg_model(nn.Module):
         self.layer2 = nn.Linear(hidden_layer, hidden_layer//2)
         self.layer3 = nn.Linear(hidden_layer//2, hidden_layer//4)
         self.layer4 = nn.Linear(hidden_layer//4, hidden_layer//2)
-        self.layer5 = nn.Linear(hidden_layer//2, hidden_layer//3)
-        self.layer6 = nn.Linear(hidden_layer//3, hidden_layer//2)
-        self.layer7 = nn.Linear(hidden_layer//2, hidden_layer//4)
-        self.layer8 = nn.Linear(hidden_layer//4, 1)
+        self.layer5 = nn.Linear(hidden_layer//2, 1)
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
         x = F.relu(self.layer2(x))
         x = F.relu(self.layer3(x))
         x = F.relu(self.layer4(x))
-        x = F.relu(self.layer5(x))
-        x = F.relu(self.layer6(x))
-        x = F.relu(self.layer7(x))
-        x = self.layer8(x)
+        x = self.layer5(x)
         return x
 
 def string_to_ascii_list(text):
@@ -133,7 +133,7 @@ def test(input:list[int]):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range = 3000
+    epoch_range = 8500
     batches = 512
     hidden_layer_range = 128
     parameter = [epoch_range,batches,hidden_layer_range]
