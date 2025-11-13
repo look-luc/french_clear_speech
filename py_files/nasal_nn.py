@@ -38,13 +38,15 @@ class reg_model(nn.Module):
         self.layer1 = nn.Linear(input_features, hidden_layer)
         self.layer2 = nn.Linear(hidden_layer, hidden_layer//2)
         self.layer3 = nn.Linear(hidden_layer//2, hidden_layer//4)
-        self.layer4 = nn.Linear(hidden_layer//4, 1)
+        self.layer4 = nn.Linear(hidden_layer//4, hidden_layer//2)
+        self.layer5 = nn.Linear(hidden_layer//2, 1)
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
         x = F.relu(self.layer2(x))
         x = F.relu(self.layer3(x))
-        x = self.layer4(x)
+        x = F.relu(self.layer4(x))
+        x = self.layer5(x)
         return x
 
 def string_to_ascii_list(text):
