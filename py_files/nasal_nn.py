@@ -29,7 +29,7 @@ class two_lay_data(Dataset):
         return self.features[idx], self.targets[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, input_features, hidden_layer, dropout_rate=0.2):
+    def __init__(self, input_features, hidden_layer):
         super(reg_model,self).__init__()
         self.layer1 = nn.Linear(input_features, hidden_layer)
         self.bn1 = nn.BatchNorm1d(hidden_layer)
@@ -37,20 +37,12 @@ class reg_model(nn.Module):
         self.layer2 = nn.Linear(hidden_layer, hidden_layer//2)
         self.bn2 = nn.BatchNorm1d(hidden_layer//2)
 
-        self.layer3 = nn.Linear(hidden_layer//2, hidden_layer//4)
-        self.bn3 = nn.BatchNorm1d(hidden_layer//4)
-
-        self.layer4 = nn.Linear(hidden_layer//4, hidden_layer//2)
-        self.bn4 = nn.BatchNorm1d(hidden_layer//2)
-
-        self.layer5 = nn.Linear(hidden_layer//2, 1)
+        self.layer3 = nn.Linear(hidden_layer//2, 1)
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
         x = F.relu(self.layer2(x))
-        x = F.relu(self.layer3(x))
-        x = F.relu(self.layer4(x))
-        x = self.layer5(x)
+        x = self.layer3(x)
         return x
 
 def string_to_ascii_list(text):
@@ -150,9 +142,9 @@ def test(input:list[int]):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range = 10500
+    epoch_range = 15500
     batches = 512
-    hidden_layer_range = 128
+    hidden_layer_range = 64
     parameter = [epoch_range,batches,hidden_layer_range]
     minimum_out = {"epoch":2500, "batch":512, "hidden layer":128, "Train Loss":0.0315, "Val Loss":0.0585}
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2]}")
