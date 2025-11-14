@@ -42,15 +42,10 @@ class reg_model(nn.Module):
         x = self.layer2(x)
         return x
 
-def string_to_ascii_list(text):
-    if pd.isna(text):  # Handle NaN values
-        return None
-    return int("".join([ascii(char) for char in str(text).encode('ascii', errors='replace')]))
-
 def test(input:list[int]):
     df = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/vowel_data_all_LabPhon.csv")
 
-    features_all = df.drop(['Target'], axis=1).values
+    features_all = df.drop(['Target', 'vowelSAMPA'], axis=1).values
     targets_all = df['Target'].values
 
     X_train, X_val, y_train, y_val = train_test_split(
@@ -121,7 +116,7 @@ def test(input:list[int]):
 
 if __name__ == "__main__":
     epoch_range = 2500
-    batches = 512
+    batches = 64
     hidden_layer = 64
     minimum_out = {"epoch": 2500, "batch": 512, "hidden layer": 128, "Train Loss": 0.0315, "Val Loss": 0.0585}
     parameter = [epoch_range, batches, hidden_layer]
