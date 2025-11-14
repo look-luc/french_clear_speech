@@ -148,7 +148,7 @@ def test(input:list[int]):
 if __name__ == "__main__":
     epoch_range = 15500
     batches = 512
-    hidden_layer_range = 64
+    hidden_layer_range = 128
     parameter = [epoch_range,batches,hidden_layer_range]
     minimum_out = {"epoch":2500, "batch":512, "hidden layer":128, "Train Loss":0.0315, "Val Loss":0.0585}
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2]}")
