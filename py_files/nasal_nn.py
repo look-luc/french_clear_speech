@@ -62,38 +62,16 @@ def string_to_ascii_list(text):
     return int("".join([ascii(char) for char in str(text).encode('ascii', errors='replace')]))
 
 def test(input:list[int]):
-    nasal = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/nasal copy.csv")
-    nasal['vowelSAMPA'] = nasal['vowelSAMPA'].apply(string_to_ascii_list)
+    df = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/vowel_data_all_LabPhon.csv")
 
-    nasal_oral = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/nasal_normal copy.csv")
-    nasal_oral['vowelSAMPA'] = nasal_oral['vowelSAMPA'].apply(string_to_ascii_list)
-
-    df = pd.concat([
-        nasal_oral,
-        nasal
-    ])
-
-    features_all = df.drop(['target', 'vowelSAMPA'], axis=1).values
+    features_all = df.drop(['target'], axis=1).values
     targets_all = df['target'].values
 
-    X_train_, dummyval, y_train, dummy_y_val = train_test_split(
+    X_train, X_val, y_train, y_val = train_test_split(
         features_all, targets_all, test_size=0.2, random_state=42
     )
-
-    df_eval = pd.concat([
-        nasal_oral.sample(frac=0.8),
-        nasal.sample(frac=0.2)
-    ])
-
-    eval_all = df_eval.drop(['target', 'vowelSAMPA'], axis=1).values
-    targets_val_all = df_eval['target'].values
-
-    dummytrain,X_val,dummy_y_train, y_val = train_test_split(
-        eval_all, targets_val_all, test_size=0.2, random_state=42
-    )
-
     scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train_)
+    X_train = scaler.fit_transform(X_train)
     X_val = scaler.transform(X_val)
 
     train_dataset = two_lay_data(X_train, y_train)
