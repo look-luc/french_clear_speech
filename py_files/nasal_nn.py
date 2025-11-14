@@ -1,3 +1,4 @@
+import math
 import os
 from itertools import product
 
@@ -165,16 +166,20 @@ if __name__ == "__main__":
     hidden_layer_3_ranges = [16, 32]
     hidden_layer_range = list(product(hidden_layer_1_ranges, hidden_layer_2_ranges, hidden_layer_3_ranges))
     minimum_out = {"epoch": 2500, "batch": 512, "hidden layer": 128, "Train Loss": 0.0315, "Val Loss": 0.0585}
+    best_hl = {"hidden layer 1": [], "hidden layer 2": [], "hidden layer 3": [], "Train Loss": math.inf,
+               "Val Loss": math.inf}
     for hidden_layer in hidden_layer_range:
         parameter = [epoch_range, batches, hidden_layer[0], hidden_layer[1], hidden_layer[2]]
         print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
         train_loss, val_loss = test(parameter)
-        if train_loss < minimum_out["Train Loss"] and val_loss < minimum_out["Val Loss"]:
-            minimum_out["epoch"] = parameter[0]
-            minimum_out["batch"] = parameter[1]
-            minimum_out["hidden layer"] = parameter[2:-1]
-            minimum_out["Train Loss"] = train_loss
-            minimum_out["Val Loss"] = val_loss
+        if train_loss < best_hl["Train Loss"] and val_loss < best_hl["Val Loss"]:
+            best_hl["hidden layer 1"] = hidden_layer[0]
+            best_hl["hidden layer 2"] = hidden_layer[1]
+            best_hl["hidden layer 3"] = hidden_layer[2]
+            best_hl["Train Loss"] = train_loss
+            best_hl["Val Loss"] = val_loss
 
+    for element1, element2 in best_hl.items():
+        print(f"{element1} : {element2}")
     for key, value in minimum_out.items():
         print(f"{key}: {value}")
