@@ -1,4 +1,6 @@
 import os
+from itertools import product
+
 os.environ["OMP_NUM_THREADS"] = "16"
 os.environ["MKL_NUM_THREADS"] = "16"
 
@@ -29,21 +31,21 @@ class two_lay_data(Dataset):
         return self.features[idx], self.targets[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, input_features, hidden_layer):
+    def __init__(self, input_features, hidden_layer1, hidden_layer2, hidden_layer3, hidden_layer4):
         super(reg_model,self).__init__()
-        self.layer1 = nn.Linear(input_features, hidden_layer)
-        self.bn1 = nn.BatchNorm1d(hidden_layer)
+        self.layer1 = nn.Linear(input_features, hidden_layer1)
+        self.bn1 = nn.BatchNorm1d(hidden_layer1)
 
-        self.layer2 = nn.Linear(hidden_layer, hidden_layer//2)
-        self.bn2 = nn.BatchNorm1d(hidden_layer//2)
+        self.layer2 = nn.Linear(hidden_layer1, hidden_layer2)
+        self.bn2 = nn.BatchNorm1d(hidden_layer2)
 
-        self.layer3 = nn.Linear(hidden_layer//2, hidden_layer // 4)
-        self.bn3 = nn.BatchNorm1d(hidden_layer // 4)
+        self.layer3 = nn.Linear(hidden_layer2, hidden_layer3)
+        self.bn3 = nn.BatchNorm1d(hidden_layer3)
 
-        self.layer4 = nn.Linear(hidden_layer // 4, hidden_layer // 4)
-        self.bn4 = nn.BatchNorm1d(hidden_layer // 4)
+        self.layer4 = nn.Linear(hidden_layer3, hidden_layer4)
+        self.bn4 = nn.BatchNorm1d(hidden_layer4)
 
-        self.layer5 = nn.Linear(hidden_layer // 4, 1)
+        self.layer5 = nn.Linear(hidden_layer4, 1)
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
@@ -112,7 +114,13 @@ def test(input:list[int]):
         pin_memory=device.type == 'cuda'
     )
 
-    model = reg_model(input_features=X_train.shape[1], hidden_layer=input[2])
+    model = reg_model(
+        input_features=X_train.shape[1],
+        hidden_layer1=input[2],
+        hidden_layer2=input[3],
+        hidden_layer3=input[4],
+        hidden_layer4=input[4]
+    )
     if torch.cuda.is_available() and torch.cuda.device_count() > 1:
         print(f"Using {torch.cuda.device_count()} GPUs for Data Parallelism.")
         model = nn.DataParallel(model)
@@ -150,19 +158,23 @@ def test(input:list[int]):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range = 15500
+    epoch_range = 2500
     batches = 512
-    hidden_layer_range = 64
-    parameter = [epoch_range,batches,hidden_layer_range]
-    minimum_out = {"epoch":2500, "batch":512, "hidden layer":128, "Train Loss":0.0315, "Val Loss":0.0585}
-    print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2]}")
-    train_loss, val_loss = test(parameter)
-    if train_loss < minimum_out["Train Loss"] and val_loss < minimum_out["Val Loss"]:
-        minimum_out["epoch"] = parameter[0]
-        minimum_out["batch"] = parameter[1]
-        minimum_out["hidden layer"] = parameter[2]
-        minimum_out["Train Loss"] = train_loss
-        minimum_out["Val Loss"] = val_loss
+    hidden_layer_1_ranges = [64, 128]
+    hidden_layer_2_ranges = [32, 64]
+    hidden_layer_3_ranges = [16, 32]
+    hidden_layer_range = list(product(hidden_layer_1_ranges, hidden_layer_2_ranges, hidden_layer_3_ranges))
+    minimum_out = {"epoch": 2500, "batch": 512, "hidden layer": 128, "Train Loss": 0.0315, "Val Loss": 0.0585}
+    for hidden_layer in hidden_layer_range:
+        parameter = [epoch_range, batches, hidden_layer[0], hidden_layer[1], hidden_layer[2]]
+        print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
+        train_loss, val_loss = test(parameter)
+        if train_loss < minimum_out["Train Loss"] and val_loss < minimum_out["Val Loss"]:
+            minimum_out["epoch"] = parameter[0]
+            minimum_out["batch"] = parameter[1]
+            minimum_out["hidden layer"] = parameter[2:-1]
+            minimum_out["Train Loss"] = train_loss
+            minimum_out["Val Loss"] = val_loss
 
     for key, value in minimum_out.items():
         print(f"{key}: {value}")
