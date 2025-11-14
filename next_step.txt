@@ -1,0 +1,2 @@
+- only use nasal and oral vowels
+    - only ones that have oral and nasal pair vowels
