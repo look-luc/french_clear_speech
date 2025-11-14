@@ -1,8 +1,3 @@
-import os
-os.environ["TOKENIZERS_PARALLELISM"] = "true"
-os.environ["OMP_NUM_THREADS"] = "16"
-os.environ["MKL_NUM_THREADS"] = "16"
-
 from sklearn.preprocessing import StandardScaler
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -10,9 +5,6 @@ import pandas as pd
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
-
-torch.set_num_threads(16)
-torch.set_num_interop_threads(16)
 
 if torch.backends.mps.is_available():
     device = torch.device("mps")
@@ -92,13 +84,24 @@ def test(input:list[int]):
     train_dataset = two_lay_data(X_train, y_train)
     val_dataset = two_lay_data(X_val, y_val)
 
-    train_dataloader = DataLoader(train_dataset, batch_size=input[1], shuffle=True,num_workers=0)
-    val_dataloader = DataLoader(val_dataset, batch_size=input[1], shuffle=False,num_workers=0)
+    train_dataloader = DataLoader(
+        train_dataset,
+        batch_size=input[1],
+        shuffle=True,
+        num_workers=4,
+        pin_memory=device.type == 'cuda')
+
+    val_dataloader = DataLoader(
+        val_dataset,
+        batch_size=input[1],
+        shuffle=False,
+        num_workers=4,
+        pin_memory=device.type == 'cuda')
 
     model = reg_model(input_features=X_train.shape[1], hidden_layer=input[2])
-    # if torch.cuda.device_count() > 1:
-    #     print(f"Using {torch.cuda.device_count()} GPUs!")
-    #     model = nn.DataParallel(model)
+    if torch.cuda.is_available() and torch.cuda.device_count() > 1:
+        print(f"Using {torch.cuda.device_count()} GPUs for Data Parallelism.")
+        model = nn.DataParallel(model)
     model.to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
