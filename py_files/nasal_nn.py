@@ -25,19 +25,36 @@ class two_lay_data(Dataset):
         return self.features[idx], self.targets[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, input_features, hidden_layer):
+    def __init__(self, input_features, hidden_layer, dropout_rate=0.2):
         super(reg_model,self).__init__()
         self.layer1 = nn.Linear(input_features, hidden_layer)
+        self.bn1 = nn.BatchNorm1d(hidden_layer)
+
         self.layer2 = nn.Linear(hidden_layer, hidden_layer//2)
+        self.bn2 = nn.BatchNorm1d(hidden_layer//2)
+
         self.layer3 = nn.Linear(hidden_layer//2, hidden_layer//4)
+        self.bn3 = nn.BatchNorm1d(hidden_layer//4)
+
         self.layer4 = nn.Linear(hidden_layer//4, hidden_layer//2)
+        self.bn4 = nn.BatchNorm1d(hidden_layer//2)
+
         self.layer5 = nn.Linear(hidden_layer//2, 1)
+        self.dropout = nn.Dropout(dropout_rate)
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
+        x = self.dropout(x)
+
         x = F.relu(self.layer2(x))
+        x = self.dropout(x)
+
         x = F.relu(self.layer3(x))
+        x = self.dropout(x)
+
         x = F.relu(self.layer4(x))
+        x = self.dropout(x)
+
         x = self.layer5(x)
         return x
 
@@ -88,15 +105,17 @@ def test(input:list[int]):
         train_dataset,
         batch_size=input[1],
         shuffle=True,
-        num_workers=4,
-        pin_memory=device.type == 'cuda')
+        num_workers=0,
+        pin_memory=device.type == 'cuda'
+    )
 
     val_dataloader = DataLoader(
         val_dataset,
         batch_size=input[1],
         shuffle=False,
-        num_workers=4,
-        pin_memory=device.type == 'cuda')
+        num_workers=0,
+        pin_memory=device.type == 'cuda'
+    )
 
     model = reg_model(input_features=X_train.shape[1], hidden_layer=input[2])
     if torch.cuda.is_available() and torch.cuda.device_count() > 1:
@@ -127,7 +146,7 @@ def test(input:list[int]):
             inputs, batch_targets = inputs.to(device), batch_targets.to(device)
             outputs = model(inputs)
             loss = criterion(outputs, batch_targets)
-            val_loss += loss
+            val_loss += loss.item()
 
     print(f'Epoch {epochs+1}/{num_epochs}, ',
             f'Train Loss: {train_loss / len(train_dataloader):.4f}, ',
