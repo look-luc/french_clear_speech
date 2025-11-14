@@ -40,21 +40,12 @@ class reg_model(nn.Module):
         self.bn4 = nn.BatchNorm1d(hidden_layer//2)
 
         self.layer5 = nn.Linear(hidden_layer//2, 1)
-        self.dropout = nn.Dropout(dropout_rate)
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
-        x = self.dropout(x)
-
         x = F.relu(self.layer2(x))
-        x = self.dropout(x)
-
         x = F.relu(self.layer3(x))
-        x = self.dropout(x)
-
         x = F.relu(self.layer4(x))
-        x = self.dropout(x)
-
         x = self.layer5(x)
         return x
 
