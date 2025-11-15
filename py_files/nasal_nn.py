@@ -43,8 +43,11 @@ class reg_model(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.2),
             nn.Linear(hidden_layer, hidden_layer // 2),
+            nn.Dropout(0.2),
             nn.ReLU(),
-            nn.Linear(hidden_layer // 2, 1)
+            nn.Linear(hidden_layer // 2, hidden_layer // 4),
+            nn.ReLU(),
+            nn.Linear(hidden_layer // 4, 1),
         )
 
     def forward(self, x_num, x_cat):
@@ -142,7 +145,7 @@ if __name__ == "__main__":
     epoch_range = 4200
     batches = 64
     hidden_layer = 512
-    minimum_out = {"epoch": 0, "batch": 0, "hidden layer": 0, "Train Loss": 1000, "Val Loss": 1000}
+    minimum_out = {"epoch": 4200, "batch": 64, "hidden layer": 512, "Train Loss": 0.2501, "Val Loss": 0.2501}
     parameter = [epoch_range, batches, hidden_layer]
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
     train_loss, val_loss = test(parameter)
