@@ -1,5 +1,7 @@
 import os
 
+import numpy as np
+
 os.environ["OMP_NUM_THREADS"] = "16"
 os.environ["MKL_NUM_THREADS"] = "16"
 
@@ -18,45 +20,66 @@ elif torch.cuda.is_available():
 else:
     device = torch.device("cpu")
 
-class two_lay_data(Dataset):
-    def __init__(self,features,target):
-        self.features = torch.FloatTensor(features)
-        self.targets = torch.tensor(target, dtype=torch.float32).unsqueeze(1)
+
+class data(Dataset):
+    def __init__(self, X_num, X_cat, y):
+        self.X_num = torch.tensor(X_num, dtype=torch.float32)
+        self.X_cat = torch.tensor(X_cat, dtype=torch.long)
+        self.y = torch.tensor(y, dtype=torch.float32).unsqueeze(1)
     
     def __len__(self):
-        return len(self.features)
+        return len(self.y)
 
     def __getitem__(self, idx):
-        return self.features[idx], self.targets[idx]
+        return self.X_num[idx], self.X_cat[idx], self.y[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, input_features, hidden_layer):
+    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=10):
         super(reg_model,self).__init__()
-        self.layer1 = nn.Linear(input_features, hidden_layer)
+        self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
+        combined_input_size = num_numerical_features + embedding_dim
+
+        self.layer1 = nn.Linear(combined_input_size, hidden_layer)
         self.bn1 = nn.BatchNorm1d(hidden_layer)
 
-        self.layer2 = nn.Linear(hidden_layer, 1)
+        self.layer2 = nn.Linear(hidden_layer, hidden_layer // 2)
+        self.bn2 = nn.BatchNorm1d(hidden_layer // 2)
 
-    def forward(self, x):
-        x = F.relu(self.layer1(x))
-        x = self.layer2(x)
+        self.layer3 = nn.Linear(hidden_layer // 2, 1)
+
+    def forward(self, x_num, x_cat):
+        vowel_embed = self.vowel_embedding(x_cat)
+        combined_features = torch.cat([x_num, vowel_embed], dim=1)
+
+        x = F.relu(self.bn1(self.layer1(combined_features)))
+        x = F.relu(self.bn2(self.layer2(x)))
+        x = self.layer3(x)
         return x
 
 def test(input:list[int]):
     df = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/vowel_data_all_LabPhon.csv")
 
-    features_all = df.drop(['Target', 'vowelSAMPA'], axis=1).values
-    targets_all = df['Target'].values
+    unique_vowels = df["vowelSAMPA"].unique()
+    vowel_to_index = {vowel: i for i, vowel in enumerate(unique_vowels)}
+    df['vowel_index'] = df["vowelSAMPA"].map(vowel_to_index)
+    num_vowels = len(unique_vowels)
 
-    X_train, X_val, y_train, y_val = train_test_split(
-        features_all, targets_all, test_size=0.2, random_state=42
-    )
+    numerical_cols = [col for col in df.columns
+                      if col not in ["vowelSAMPA", 'vowel_index', "Target"]]
+
+    features_num = df[numerical_cols].values.astype(np.float32)
+    targets_num = df["Target"].values.astype(np.float32)
+
     scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train)
-    X_val = scaler.transform(X_val)
+    numerical_features_scaled = scaler.fit_transform(features_num)
 
-    train_dataset = two_lay_data(X_train, y_train)
-    val_dataset = two_lay_data(X_val, y_val)
+    cat_indices = df['vowel_index'].values
+    X_num_train, X_num_test, X_cat_train, X_cat_test, y_train, y_test = train_test_split(
+        numerical_features_scaled, cat_indices, targets_num, test_size=0.2, random_state=42
+    )
+
+    train_dataset = data(X_num_train, X_cat_train, y_train)
+    val_dataset = data(X_num_test, X_cat_test, y_test)
 
     train_dataloader = DataLoader(
         train_dataset,
@@ -75,8 +98,10 @@ def test(input:list[int]):
     )
 
     model = reg_model(
-        input_features=X_train.shape[1],
-        hidden_layer=input[2]
+        num_numerical_features=X_num_train.shape[1],
+        num_vowels=num_vowels,
+        hidden_layer=input[2],
+        embedding_dim=10
     )
     if torch.cuda.is_available() and torch.cuda.device_count() > 1:
         print(f"Using {torch.cuda.device_count()} GPUs for Data Parallelism.")
@@ -89,24 +114,26 @@ def test(input:list[int]):
     for epochs in range(num_epochs):
         model.train()
         train_loss = 0.0
-        for inputs,batch_targets in train_dataloader:
-            inputs, batch_targets = inputs.to(device), batch_targets.to(device)
+        for inputs_num, inputs_cat, batch_target in train_dataloader:
+            inputs_num, inputs_cat, batch_target = inputs_num.to(device), inputs_cat.to(device), batch_target.to(device)
             optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = criterion(outputs, batch_targets)
+            outputs = model(inputs_num, inputs_cat)
+            loss = criterion(outputs, batch_target)
             loss.backward()
             optimizer.step()
             train_loss += loss.item()
-        print(f'Epoch {epochs+1}/{num_epochs}, Loss: {loss.item():.4f}')
+        print(f'Epoch {epochs + 1}/{num_epochs}, Train Batch Loss: {train_loss / len(train_dataloader):.4f}')
     
     model.eval()
     val_loss = 0.0
     with torch.no_grad():
-        for inputs, batch_targets in val_dataloader:
-            inputs, batch_targets = inputs.to(device), batch_targets.to(device)
-            outputs = model(inputs)
-            loss = criterion(outputs, batch_targets)
-            val_loss += loss.item()
+        for val_inputs_num, val_inputs_cat, val_targets in val_dataloader:
+            val_inputs_num, val_inputs_cat, val_targets = val_inputs_num.to(device), val_inputs_cat.to(
+                device).long(), val_targets.to(device)
+            val_outputs = model(val_inputs_num, val_inputs_cat)
+
+            v_loss = criterion(val_outputs, val_targets)
+            val_loss += v_loss.item()
 
     print(f'Epoch {epochs+1}/{num_epochs}, ',
             f'Train Loss: {train_loss / len(train_dataloader):.4f}, ',
@@ -115,9 +142,9 @@ def test(input:list[int]):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range = 2500
-    batches = 64
-    hidden_layer = 64
+    epoch_range = 200
+    batches = 128
+    hidden_layer = 512
     minimum_out = {"epoch": 2500, "batch": 512, "hidden layer": 128, "Train Loss": 0.0315, "Val Loss": 0.0585}
     parameter = [epoch_range, batches, hidden_layer]
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
