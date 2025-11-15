@@ -11,7 +11,6 @@ from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
-import torch.nn.functional as F
 
 if torch.backends.mps.is_available():
     device = torch.device("mps")
@@ -39,21 +38,20 @@ class reg_model(nn.Module):
         self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
         combined_input_size = num_numerical_features + embedding_dim
 
-        self.layer1 = nn.Linear(combined_input_size, hidden_layer)
-        self.bn1 = nn.BatchNorm1d(hidden_layer)
-
-        self.layer2 = nn.Linear(hidden_layer, hidden_layer // 2)
-        self.bn2 = nn.BatchNorm1d(hidden_layer // 2)
-
-        self.layer3 = nn.Linear(hidden_layer // 2, 1)
+        self.regressor = nn.Sequential(
+            nn.Linear(combined_input_size, hidden_layer),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(hidden_layer, hidden_layer // 2),
+            nn.ReLU(),
+            nn.Linear(hidden_layer // 2, 1)
+        )
 
     def forward(self, x_num, x_cat):
         vowel_embed = self.vowel_embedding(x_cat)
         combined_features = torch.cat([x_num, vowel_embed], dim=1)
 
-        x = F.relu(self.bn1(self.layer1(combined_features)))
-        x = F.relu(self.bn2(self.layer2(x)))
-        x = self.layer3(x)
+        x = self.regressor(combined_features)
         return x
 
 def test(input:list[int]):
@@ -64,8 +62,7 @@ def test(input:list[int]):
     df['vowel_index'] = df["vowelSAMPA"].map(vowel_to_index)
     num_vowels = len(unique_vowels)
 
-    numerical_cols = [col for col in df.columns
-                      if col not in ["vowelSAMPA", 'vowel_index', "Target"]]
+    numerical_cols = [col for col in df.columns if col not in ["vowelSAMPA", 'vowel_index', "Target"]]
 
     features_num = df[numerical_cols].values.astype(np.float32)
     targets_num = df["Target"].values.astype(np.float32)
@@ -142,10 +139,10 @@ def test(input:list[int]):
     return train_loss / len(train_dataloader), val_loss / len(val_dataloader)
 
 if __name__ == "__main__":
-    epoch_range = 200
-    batches = 128
+    epoch_range = 4200
+    batches = 64
     hidden_layer = 512
-    minimum_out = {"epoch": 2500, "batch": 512, "hidden layer": 128, "Train Loss": 0.0315, "Val Loss": 0.0585}
+    minimum_out = {"epoch": 0, "batch": 0, "hidden layer": 0, "Train Loss": 1000, "Val Loss": 1000}
     parameter = [epoch_range, batches, hidden_layer]
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
     train_loss, val_loss = test(parameter)
