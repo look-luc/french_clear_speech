@@ -33,7 +33,14 @@ class data(Dataset):
         return self.X_num[idx], self.X_cat[idx], self.y[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=10, dropout_rate=0.2):
+    def __init__(
+            self,
+            num_numerical_features,
+            num_vowels,
+            hidden_layer,
+            embedding_dim=5,
+            dropout_rate=0.2
+    ):
         super(reg_model,self).__init__()
         self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
         combined_input_size = num_numerical_features + embedding_dim
@@ -58,7 +65,7 @@ class reg_model(nn.Module):
 def test(input:list[int]):
     df = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/vowel_data_all_LabPhon.csv")
 
-    unique_vowels = df["vowelSAMPA"].unique()
+    unique_vowels = sorted(df["vowelSAMPA"].unique())
     vowel_to_index = {vowel: i for i, vowel in enumerate(unique_vowels)}
     df['vowel_index'] = df["vowelSAMPA"].map(vowel_to_index)
     num_vowels = len(unique_vowels)
@@ -70,7 +77,7 @@ def test(input:list[int]):
 
     cat_indices = df['vowel_index'].values
     X_num_train, X_num_test, X_cat_train, X_cat_test, y_train, y_test = train_test_split(
-        features_num, cat_indices, targets_num, test_size=0.2, random_state=42
+        features_num, cat_indices, targets_num, test_size=0.2, random_state=42, stratify=cat_indices
     )
 
     scaler = StandardScaler()
@@ -102,9 +109,6 @@ def test(input:list[int]):
         num_vowels=num_vowels,
         hidden_layer=input[2],
     )
-    if torch.cuda.is_available() and torch.cuda.device_count() > 1:
-        print(f"Using {torch.cuda.device_count()} GPUs for Data Parallelism.")
-        model = nn.DataParallel(model)
     model.to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-5)
@@ -120,7 +124,6 @@ def test(input:list[int]):
             outputs = model(inputs_num, inputs_cat)
             loss = criterion(outputs, batch_target)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             train_loss += loss.item()
         print(f'Epoch {epochs + 1}/{num_epochs}, Train Batch Loss: {train_loss / len(train_dataloader):.4f}')
