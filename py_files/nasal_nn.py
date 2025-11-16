@@ -109,8 +109,8 @@ def test(input:list[int]):
         model = nn.DataParallel(model)
     model.to(device)
     criterion = nn.MSELoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=1e-7)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=50)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=1e-6)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=40)
 
     num_epochs = input[0]
     for epochs in range(num_epochs):
@@ -150,7 +150,7 @@ def test(input:list[int]):
     return final_train_loss, final_val_loss
 
 if __name__ == "__main__":
-    epoch_range = 4200
+    epoch_range = 10200
     batches = 256
     hidden_layer = 512
     minimum_out = {"epoch": 4200, "batch": 256, "hidden layer": 512, "Train Loss": 0.2501, "Val Loss": 0.2496}
