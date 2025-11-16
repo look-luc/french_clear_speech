@@ -33,7 +33,7 @@ class data(Dataset):
         return self.X_num[idx], self.X_cat[idx], self.y[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=20):
+    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=20, dropout_rate=0.2):
         super(reg_model,self).__init__()
         self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
         combined_input_size = num_numerical_features + embedding_dim
@@ -41,10 +41,13 @@ class reg_model(nn.Module):
         self.regressor = nn.Sequential(
             nn.Linear(combined_input_size, hidden_layer),
             nn.ReLU(),
+            nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer, hidden_layer // 2),
             nn.ReLU(),
+            nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer // 2, hidden_layer // 4),
             nn.ReLU(),
+            nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer // 4, 1),
         )
 
@@ -106,8 +109,8 @@ def test(input:list[int]):
         model = nn.DataParallel(model)
     model.to(device)
     criterion = nn.MSELoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=1e-7)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=50)
 
     num_epochs = input[0]
     for epochs in range(num_epochs):
@@ -138,11 +141,11 @@ def test(input:list[int]):
         avg_val_loss = val_loss / len(val_dataloader)
         scheduler.step(avg_val_loss)
 
-        print(f'Epoch {epochs + 1}/{num_epochs}, ',
-              f'Train Loss: {train_loss / len(train_dataloader):.4f}, ',
-              f'Val Loss: {val_loss / len(val_dataloader):.4f}')
-        final_train_loss = avg_train_loss
-        final_val_loss = avg_val_loss
+    print(f'Epoch {epochs + 1}/{num_epochs}, ',
+          f'Train Loss: {train_loss / len(train_dataloader):.4f}, ',
+          f'Val Loss: {val_loss / len(val_dataloader):.4f}')
+    final_train_loss = avg_train_loss
+    final_val_loss = avg_val_loss
 
     return final_train_loss, final_val_loss
 
