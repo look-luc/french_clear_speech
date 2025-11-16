@@ -33,7 +33,7 @@ class data(Dataset):
         return self.X_num[idx], self.X_cat[idx], self.y[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=20, dropout_rate=0.1):
+    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=32, dropout_rate=0.2):
         super(reg_model,self).__init__()
         self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
         combined_input_size = num_numerical_features + embedding_dim
@@ -148,10 +148,10 @@ def test(input:list[int]):
     return final_train_loss, final_val_loss
 
 if __name__ == "__main__":
-    epoch_range = 12200
-    batches = 128
+    epoch_range = 200
+    batches = 64
     hidden_layer = 128
-    minimum_out = {"epoch": 4200, "batch": 256, "hidden layer": 512, "Train Loss": 0.2501, "Val Loss": 0.2496}
+    minimum_out = {"epoch": 200, "batch": 64, "hidden layer": 128, "Train Loss": 0.0008, "Val Loss": 0.0011}
     parameter = [epoch_range, batches, hidden_layer]
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
     train_loss, val_loss = test(parameter)
