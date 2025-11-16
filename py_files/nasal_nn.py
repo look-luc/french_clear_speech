@@ -33,20 +33,20 @@ class data(Dataset):
         return self.X_num[idx], self.X_cat[idx], self.y[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=20, dropout_rate=0.2):
+    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=32, dropout_rate=0.4):
         super(reg_model,self).__init__()
         self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
         combined_input_size = num_numerical_features + embedding_dim
 
         self.regressor = nn.Sequential(
             nn.Linear(combined_input_size, hidden_layer),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer, hidden_layer // 2),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer // 2, hidden_layer // 4),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer // 4, 1),
         )
@@ -109,8 +109,8 @@ def test(input:list[int]):
         model = nn.DataParallel(model)
     model.to(device)
     criterion = nn.MSELoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=1e-6)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=40)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-6)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=20)
 
     num_epochs = input[0]
     for epochs in range(num_epochs):
@@ -150,9 +150,9 @@ def test(input:list[int]):
     return final_train_loss, final_val_loss
 
 if __name__ == "__main__":
-    epoch_range = 10200
-    batches = 256
-    hidden_layer = 512
+    epoch_range = 12200
+    batches = 128
+    hidden_layer = 1024
     minimum_out = {"epoch": 4200, "batch": 256, "hidden layer": 512, "Train Loss": 0.2501, "Val Loss": 0.2496}
     parameter = [epoch_range, batches, hidden_layer]
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
