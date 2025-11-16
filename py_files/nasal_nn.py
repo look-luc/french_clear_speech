@@ -33,7 +33,7 @@ class data(Dataset):
         return self.X_num[idx], self.X_cat[idx], self.y[idx]
 
 class reg_model(nn.Module):
-    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=32, dropout_rate=0.2):
+    def __init__(self, num_numerical_features, num_vowels, hidden_layer, embedding_dim=10, dropout_rate=0.2):
         super(reg_model,self).__init__()
         self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
         combined_input_size = num_numerical_features + embedding_dim
@@ -44,6 +44,7 @@ class reg_model(nn.Module):
             nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer, hidden_layer // 2),
             nn.ReLU(),
+            nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer // 2, 1)
         )
 
@@ -67,17 +68,18 @@ def test(input:list[int]):
     features_num = df[numerical_cols].values.astype(np.float32)
     targets_num = df["Target"].values.astype(np.float32)
 
-    scaler = StandardScaler()
-    numerical_features_scaled = scaler.fit_transform(features_num)
-
-    cat_indices = df.loc[df.index.intersection(features_num.index), 'vowel_index'].values if 'index' in df.columns else \
-    df['vowel_index'].values[df.index.isin(pd.DataFrame(features_num).index)]
+    cat_indices = df['vowel_index'].values
     X_num_train, X_num_test, X_cat_train, X_cat_test, y_train, y_test = train_test_split(
-        numerical_features_scaled, cat_indices, targets_num, test_size=0.2, random_state=42
+        features_num, cat_indices, targets_num, test_size=0.2, random_state=42
     )
 
-    train_dataset = data(X_num_train, X_cat_train, y_train)
-    val_dataset = data(X_num_test, X_cat_test, y_test)
+    scaler = StandardScaler()
+    scaler.fit(X_num_train)
+    X_num_train_scaled = scaler.transform(X_num_train)
+    X_num_test_scaled = scaler.transform(X_num_test)
+
+    train_dataset = data(X_num_train_scaled, X_cat_train, y_train)
+    val_dataset = data(X_num_test_scaled, X_cat_test, y_test)
 
     train_dataloader = DataLoader(
         train_dataset,
@@ -96,17 +98,16 @@ def test(input:list[int]):
     )
 
     model = reg_model(
-        num_numerical_features=X_num_train.shape[1],
+        num_numerical_features=X_num_train_scaled.shape[1],
         num_vowels=num_vowels,
         hidden_layer=input[2],
-        embedding_dim=10
     )
     if torch.cuda.is_available() and torch.cuda.device_count() > 1:
         print(f"Using {torch.cuda.device_count()} GPUs for Data Parallelism.")
         model = nn.DataParallel(model)
     model.to(device)
     criterion = nn.MSELoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=1e-6)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10)
 
     num_epochs = input[0]
@@ -148,9 +149,9 @@ def test(input:list[int]):
     return final_train_loss, final_val_loss
 
 if __name__ == "__main__":
-    epoch_range = 200
+    epoch_range = 800
     batches = 64
-    hidden_layer = 128
+    hidden_layer = 64
     minimum_out = {"epoch": 200, "batch": 64, "hidden layer": 128, "Train Loss": 0.0008, "Val Loss": 0.0011}
     parameter = [epoch_range, batches, hidden_layer]
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
