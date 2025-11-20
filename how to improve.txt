@@ -22,6 +22,7 @@ features_num = df[numerical_cols].values.astype(np.float32)
 
 **The Problem:** This assumes **every** other column in the CSV is a clean, numerical feature. If your CSV contains an
     ID column (e.g., `speaker_id`), a timestamp, or any other string metadata, `astype(np.float32)` will crash.
+
 **The Fix:** explicitly select known numerical columns or use `df.select_dtypes(include=[np.number])`.
 
 -----

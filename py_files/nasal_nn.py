@@ -1,3 +1,4 @@
+import copy
 import os
 
 import numpy as np
@@ -63,7 +64,7 @@ class reg_model(nn.Module):
         return x
 
 def test(input:list[int]):
-    df = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/vowel_data_all_LabPhon.csv")
+    df = pd.read_csv("../data/vowel_data_all_LabPhon.csv")
 
     unique_vowels = sorted(df["vowelSAMPA"].unique())
     vowel_to_index = {vowel: i for i, vowel in enumerate(unique_vowels)}
@@ -75,9 +76,12 @@ def test(input:list[int]):
     features_num = df[numerical_cols].values.astype(np.float32)
     targets_num = df["Target"].values.astype(np.float32)
 
+    torch.manual_seed(42)
+    np.random.seed(42)
+
     cat_indices = df['vowel_index'].values
     X_num_train, X_num_test, X_cat_train, X_cat_test, y_train, y_test = train_test_split(
-        features_num, cat_indices, targets_num, test_size=0.2, random_state=42, stratify=cat_indices
+        features_num, cat_indices, targets_num, test_size=0.2, stratify=cat_indices
     )
 
     scaler = StandardScaler()
@@ -132,24 +136,31 @@ def test(input:list[int]):
 
         model.eval()
         val_loss = 0.0
+        best_val_loss = float('inf')
+        best_model_wts = copy.deepcopy(model.state_dict())
         with torch.no_grad():
             for val_inputs_num, val_inputs_cat, val_targets in val_dataloader:
                 val_inputs_num, val_inputs_cat, val_targets = val_inputs_num.to(device), val_inputs_cat.to(
-                    device).long(), val_targets.to(device)
+                    device), val_targets.to(device)
                 val_outputs = model(val_inputs_num, val_inputs_cat)
 
                 v_loss = criterion(val_outputs, val_targets)
                 val_loss += v_loss.item()
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_model_wts = copy.deepcopy(model.state_dict())
+
         avg_val_loss = val_loss / len(val_dataloader)
         scheduler.step(avg_val_loss)
 
     print(f'Epoch {epochs + 1}/{num_epochs}, ',
           f'Train Loss: {train_loss / len(train_dataloader):.4f}, ',
           f'Val Loss: {val_loss / len(val_dataloader):.4f}')
-    final_train_loss = avg_train_loss
-    final_val_loss = avg_val_loss
+    # final_train_loss = avg_train_loss
+    # final_val_loss = avg_val_loss
 
-    return final_train_loss, final_val_loss
+    model.load_state_dict(best_model_wts)
+    return best_val_loss
 
 if __name__ == "__main__":
     epoch_range = 800
