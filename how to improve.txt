@@ -1,4 +1,5 @@
-Here is an analysis of the potential issues with the provided PyTorch regression model, ranging from critical errors to best practices for performance and stability.
+Here is an analysis of the potential issues with the provided PyTorch regression model, ranging from critical errors
+to best practices for performance and stability.
 
 ### 1\. Critical Issues (Will Cause Crashes or Logic Failures)
 
@@ -19,7 +20,8 @@ numerical_cols = [col for col in df.columns if col not in ["vowelSAMPA", 'vowel_
 features_num = df[numerical_cols].values.astype(np.float32)
 ```
 
-**The Problem:** This assumes **every** other column in the CSV is a clean, numerical feature. If your CSV contains an ID column (e.g., `speaker_id`), a timestamp, or any other string metadata, `astype(np.float32)` will crash.
+**The Problem:** This assumes **every** other column in the CSV is a clean, numerical feature. If your CSV contains an
+    ID column (e.g., `speaker_id`), a timestamp, or any other string metadata, `astype(np.float32)` will crash.
 **The Fix:** explicitly select known numerical columns or use `df.select_dtypes(include=[np.number])`.
 
 -----
@@ -28,15 +30,22 @@ features_num = df[numerical_cols].values.astype(np.float32)
 
 **A. "Last Epoch" vs. "Best Epoch"**
 The function returns `final_train_loss` and `final_val_loss` (the loss at epoch 800).
-**The Problem:** In deep learning, the model often starts overfitting after a certain point. The loss at epoch 800 might be significantly worse than at epoch 200. You are evaluating the model based on where it *finished*, not where it performed *best*.
-**The Fix:** Implement "Model Checkpointing." Track the `best_val_loss` inside the training loop and save the model state whenever the current validation loss beats the best previous loss.
+**The Problem:** In deep learning, the model often starts overfitting after a certain point. The loss at epoch 800 might
+    be significantly worse than at epoch 200. You are evaluating the model based on where it *finished*, not where it
+    performed *best*.
+
+**The Fix:** Implement "Model Checkpointing." Track the `best_val_loss` inside the training loop and save the model state
+    whenever the current validation loss beats the best previous loss.
 
 **B. No Model Saving**
-**The Problem:** Even if your logic finds a "new minimum" in the `if __name__ == "__main__":` block, **the trained model is deleted** as soon as the script finishes. You are printing that you found a better loss, but you aren't saving the `.pth` file (weights) that produced that loss.
+**The Problem:** Even if your logic finds a "new minimum" in the `if __name__ == "__main__":` block,
+    **the trained model is deleted** as soon as the script finishes. You are printing that you found a better loss,
+    but you aren't saving the `.pth` file (weights) that produced that loss.
 
 **C. Reproducibility**
 You set a seed for `train_test_split`, but not for PyTorch or NumPy.
-**The Problem:** Each time you run this code, `nn.Linear` initializes weights randomly. Your results will vary slightly every run, making hyperparameter tuning (checking if `hidden_layer=128` is actually better) unreliable.
+**The Problem:** Each time you run this code, `nn.Linear` initializes weights randomly. Your results will vary
+slightly every run, making hyperparameter tuning (checking if `hidden_layer=128` is actually better) unreliable.
 **The Fix:**
 
 ```python
@@ -57,7 +66,8 @@ def __init__(self, X_num, X_cat, y):
     ...
 ```
 
-**The Problem:** This converts the *entire* dataset into tensors and loads it into GPU/CPU RAM immediately. While fine for small CSVs, if this dataset grows, this will cause Out-Of-Memory (OOM) errors.
+**The Problem:** This converts the *entire* dataset into tensors and loads it into GPU/CPU RAM immediately.
+    While fine for small CSVs, if this dataset grows, this will cause Out-Of-Memory (OOM) errors.
 **The Fix:** Usually, one passes the numpy arrays to `__init__` and converts to tensor only in `__getitem__`.
 
 **B. Redundant Casting**
@@ -67,7 +77,8 @@ In the validation loop:
 val_inputs_cat = val_inputs_cat.to(device).long()
 ```
 
-**The Observation:** You already defined `self.X_cat` as `dtype=torch.long` in the Dataset class. Casting it again inside the loop adds a tiny bit of unnecessary overhead.
+**The Observation:** You already defined `self.X_cat` as `dtype=torch.long` in the Dataset class. Casting it again
+    inside the loop adds a tiny bit of unnecessary overhead.
 
 -----
 
@@ -85,7 +96,8 @@ minimum_out = {"epoch": 200, ...}
 if train_loss < minimum_out["Train Loss"]...
 ```
 
-**The Problem:** This dictionary is re-initialized every time you run the script. The "memory" of previous best runs is lost immediately. To actually track optimization, this data needs to be saved to a JSON or CSV file externally.
+**The Problem:** This dictionary is re-initialized every time you run the script. The "memory" of previous best runs is
+    lost immediately. To actually track optimization, this data needs to be saved to a JSON or CSV file externally.
 
 ### Summary of Recommended Changes
 
