@@ -1,4 +1,5 @@
 import copy
+import math
 import os
 
 import numpy as np
@@ -50,10 +51,7 @@ class reg_model(nn.Module):
             nn.Linear(combined_input_size, hidden_layer),
             nn.ReLU(),
             nn.Dropout(dropout_rate),
-            nn.Linear(hidden_layer, hidden_layer // 2),
-            nn.ReLU(),
-            nn.Dropout(dropout_rate),
-            nn.Linear(hidden_layer // 2, 1)
+            nn.Linear(hidden_layer, 1)
         )
 
     def forward(self, x_num, x_cat):
@@ -81,7 +79,7 @@ def test(input:list[int]):
 
     cat_indices = df['vowel_index'].values
     X_num_train, X_num_test, X_cat_train, X_cat_test, y_train, y_test = train_test_split(
-        features_num, cat_indices, targets_num, test_size=0.2, stratify=cat_indices
+        features_num, cat_indices, targets_num, test_size=0.2, random_state=42, stratify=cat_indices
     )
 
     scaler = StandardScaler()
@@ -89,15 +87,19 @@ def test(input:list[int]):
     X_num_train_scaled = scaler.transform(X_num_train)
     X_num_test_scaled = scaler.transform(X_num_test)
 
-    train_dataset = data(X_num_train_scaled, X_cat_train, y_train)
-    val_dataset = data(X_num_test_scaled, X_cat_test, y_test)
+    target_scaler = StandardScaler()
+    y_train_scaled = target_scaler.fit_transform(y_train.reshape(-1, 1)).flatten()
+    y_test_scaled = target_scaler.fit_transform(y_test.reshape(-1, 1)).flatten()
+
+    train_dataset = data(X_num_train_scaled, X_cat_train, y_train_scaled)
+    val_dataset = data(X_num_test_scaled, X_cat_test, y_test_scaled.flatten())
 
     train_dataloader = DataLoader(
         train_dataset,
         batch_size=input[1],
         shuffle=True,
         num_workers=0,
-        pin_memory=device.type == 'cuda'
+        pin_memory=True
     )
 
     val_dataloader = DataLoader(
@@ -105,7 +107,7 @@ def test(input:list[int]):
         batch_size=input[1],
         shuffle=False,
         num_workers=0,
-        pin_memory=device.type == 'cuda'
+        pin_memory=True
     )
 
     model = reg_model(
@@ -119,6 +121,10 @@ def test(input:list[int]):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10)
 
     num_epochs = input[0]
+
+    best_val_loss = float('inf')
+    best_model_wts = copy.deepcopy(model.state_dict())
+
     for epochs in range(num_epochs):
         model.train()
         train_loss = 0.0
@@ -136,8 +142,6 @@ def test(input:list[int]):
 
         model.eval()
         val_loss = 0.0
-        best_val_loss = float('inf')
-        best_model_wts = copy.deepcopy(model.state_dict())
         with torch.no_grad():
             for val_inputs_num, val_inputs_cat, val_targets in val_dataloader:
                 val_inputs_num, val_inputs_cat, val_targets = val_inputs_num.to(device), val_inputs_cat.to(
@@ -146,36 +150,39 @@ def test(input:list[int]):
 
                 v_loss = criterion(val_outputs, val_targets)
                 val_loss += v_loss.item()
-                if val_loss < best_val_loss:
-                    best_val_loss = val_loss
-                    best_model_wts = copy.deepcopy(model.state_dict())
 
         avg_val_loss = val_loss / len(val_dataloader)
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+
+        if (epochs + 1) % 50 == 0:
+            print(
+                f"Epoch {epochs + 1}/{num_epochs} | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f}")
+
         scheduler.step(avg_val_loss)
 
     print(f'Epoch {epochs + 1}/{num_epochs}, ',
           f'Train Loss: {train_loss / len(train_dataloader):.4f}, ',
           f'Val Loss: {val_loss / len(val_dataloader):.4f}')
-    # final_train_loss = avg_train_loss
-    # final_val_loss = avg_val_loss
+    final_train_loss = avg_train_loss
+    final_val_loss = avg_val_loss
 
     model.load_state_dict(best_model_wts)
-    return best_val_loss
+    return best_val_loss, final_train_loss, final_val_loss
 
 if __name__ == "__main__":
     epoch_range = 800
     batches = 64
     hidden_layer = 64
-    minimum_out = {"epoch": 200, "batch": 64, "hidden layer": 128, "Train Loss": 0.0008, "Val Loss": 0.0011}
+    minimum_out = {"epoch": 200, "batch": 64, "hidden layer": 128, "Train Loss": math.inf, "Val Loss": math.inf}
     parameter = [epoch_range, batches, hidden_layer]
-    print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2:]}")
-    train_loss, val_loss = test(parameter)
-    if train_loss < minimum_out["Train Loss"] and val_loss < minimum_out["Val Loss"]:
+    print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2]}")
+    best, train_loss, val_loss = test(parameter)
+    if train_loss < minimum_out["Train Loss"]:
         minimum_out["epoch"] = parameter[0]
         minimum_out["batch"] = parameter[1]
         minimum_out["hidden layer"] = parameter[2]
-        minimum_out["Train Loss"] = train_loss
-        minimum_out["Val Loss"] = val_loss
+        minimum_out["Val loss"] = val_loss
 
     for key, value in minimum_out.items():
         print(f"{key}: {value}")
