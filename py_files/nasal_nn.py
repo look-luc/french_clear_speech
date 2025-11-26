@@ -1,18 +1,16 @@
 import copy
-import math
 import os
 
 import numpy as np
+import pandas as pd
+import torch
+import torch.nn as nn
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from torch.utils.data import Dataset, DataLoader
 
 os.environ["OMP_NUM_THREADS"] = "16"
 os.environ["MKL_NUM_THREADS"] = "16"
-
-from sklearn.preprocessing import StandardScaler
-import torch
-from torch.utils.data import Dataset, DataLoader
-import pandas as pd
-import torch.nn as nn
-from sklearn.model_selection import train_test_split
 
 if torch.backends.mps.is_available():
     device = torch.device("mps")
@@ -174,7 +172,13 @@ if __name__ == "__main__":
     epoch_range = 800
     batches = 64
     hidden_layer = 64
-    minimum_out = {"epoch": 200, "batch": 64, "hidden layer": 128, "Train Loss": math.inf, "Val Loss": math.inf}
+    minimum_out = {
+        "epoch": 800,
+        "batch": 64,
+        "hidden layer": 128,
+        "Train Loss": 0.010314612749817908,
+        "Val Loss": 0.000276537327758538
+    }
     parameter = [epoch_range, batches, hidden_layer]
     print(f"epoch number: {parameter[0]} batch: {parameter[1]} hidden layer: {parameter[2]}")
     best, train_loss, val_loss = test(parameter)
@@ -182,7 +186,8 @@ if __name__ == "__main__":
         minimum_out["epoch"] = parameter[0]
         minimum_out["batch"] = parameter[1]
         minimum_out["hidden layer"] = parameter[2]
-        minimum_out["Val loss"] = val_loss
+        minimum_out["Train Loss"] = train_loss
+        minimum_out["Val Loss"] = val_loss
 
     for key, value in minimum_out.items():
         print(f"{key}: {value}")
