@@ -162,7 +162,7 @@ if __name__ == "__main__":
 
         # Configuration
         epoch_range = 250
-        batches = 64
+        batches = 128
         hidden_layer = 64
         parameters = [epoch_range, batches, hidden_layer]
 
