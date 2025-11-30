@@ -161,8 +161,8 @@ if __name__ == "__main__":
         df = pd.read_csv("../data/vowel_data_all_LabPhon.csv")
 
         # Configuration
-        epoch_range = 800
-        batches = 64 * 2
+        epoch_range = 850
+        batches = 64
         hidden_layer = 64
         parameters = [epoch_range, batches, hidden_layer]
 
