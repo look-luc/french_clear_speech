@@ -1,7 +1,5 @@
 import copy
-
 import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
@@ -45,7 +43,6 @@ class reg_model(nn.Module):
         x = self.regressor(combined_features)
         return x
 
-
 def run_training(df, params):
     # Unpack parameters
     num_epochs, batch_size, hidden_dim = params
@@ -75,10 +72,6 @@ def run_training(df, params):
     target_scaler = StandardScaler()
     y_train_scaled = target_scaler.fit_transform(y_train.reshape(-1, 1)).flatten()
     y_test_scaled = target_scaler.transform(y_test.reshape(-1, 1)).flatten()  # FIXED: Use transform only!
-
-    # --- Speed Optimization: Move data to GPU *before* DataLoader ---
-    # Tabular data is usually small enough to fit entirely in VRAM.
-    # This prevents CPU-GPU transfer bottlenecks during the loop.
 
     t_X_num_train = torch.tensor(X_num_train_scaled, dtype=torch.float32).to(device)
     t_X_cat_train = torch.tensor(X_cat_train, dtype=torch.long).to(device)
@@ -153,24 +146,3 @@ def run_training(df, params):
     model.load_state_dict(best_model_wts)
 
     return best_val_loss, avg_train_loss, avg_val_loss
-
-
-if __name__ == "__main__":
-    # Load data ONCE outside the loop
-    try:
-        df = pd.read_csv("../data/vowel_data_all_LabPhon.csv")
-
-        # Configuration
-        epoch_range = 250
-        batches = 128
-        hidden_layer = 256
-        parameters = [epoch_range, batches, hidden_layer]
-
-        print(f"Epochs: {parameters[0]} Batch: {parameters[1]} Hidden: {parameters[2]}")
-
-        best_loss, final_train, final_val = run_training(df, parameters)
-
-        print(f"Final Best Val Loss: {best_loss:.6f}")
-
-    except FileNotFoundError:
-        print("Error: CSV file not found. Please check the path.")
