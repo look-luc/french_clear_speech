@@ -2,7 +2,6 @@ import pandas as pd
 from regression_model import train_model
 
 if __name__ == "__main__":
-    # Load data ONCE outside the loop
     try:
         df = pd.read_csv("../data/vowel_data_all_LabPhon.csv")
 
