@@ -10,18 +10,15 @@ form Measure Formants and Duration
 		integer max_freq 5500
 endform
 
-
 ## This part selects lets the user select a directory with the files to be measured
 directory$ = chooseDirectory$ ("Choose the directory containing sound files and textgrids")
 directory$ = "'directory$'" + "/" 
 # The slash above will need to be changed to \ for PC users
 
-
 ## This part sets up an output file
 resultfile$ = "'directory$'"+"formantlog.txt"
-header_row$ = "vowelSAMPA" + tab$ + "Duration" + tab$ + "F0" + tab$ + "F1_Hz" + tab$ + "F2_Hz" + tab$ + "F3_Hz" + tab$ + "F0_Bark" + tab$ + "F1_Bark" +  + newline$
+header_row$ = "vowelSAMPA" + tab$ + "Duration" + tab$ + "F0" + tab$ + "F1_Hz" + tab$ + "F2_Hz" + tab$ + "F3_Hz" + tab$ + "F0_Bark" + tab$ + "F1_Bark" + tab$ + "F2_Bark" + tab$ + "F3_Bark" + tab$ + "dist_CATcentroid_TX" + tab$ + "dist_CATcentroid_T12" + "dist_SYSTcentroid_TX" + tab$ + "dist_SYSTcentroid_T12" + tab$ + "dist_F1meanSYST_TX" + tab$ + "dist_F1meanSYST_T12" + tab$ + "dist_F2meanSYST_TX" + tab$ + "dist_F2meanSYST_T12" + tab$ + "dist_RefMinF1_LX" + tab$ + "dist_RefMinF1_LectLCS" + tab$ + "V_rms" + newline$
 fileappend "'resultfile$'" 'header_row$'
-
 
 # List of all the sound files in the specified directory:
 Create Strings as file list... list 'directory$'*'file_type$'
