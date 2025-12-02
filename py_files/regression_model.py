@@ -7,7 +7,6 @@ elif torch.cuda.is_available():
 else:
     device = torch.device("cpu")
 
-
 class regression_model(nn.Module):
     def __init__(
             self,
