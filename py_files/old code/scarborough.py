@@ -22,7 +22,7 @@ def main()->int:
     # )
     # sec_pass(data_french_results_2_pass)
     data = getdata(
-        "/Users/lucdenardi/Desktop/python/french_clear_speach/appendix/ML Copy - FRENCH RESULTS - 2025 - Nasal Data Integrated.csv"
+        "/appendix/ML Copy - FRENCH RESULTS - 2025 - Nasal Data Integrated.csv"
     )
     appendix(data)
     return 0
