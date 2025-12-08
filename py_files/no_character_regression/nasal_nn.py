@@ -6,9 +6,9 @@ if __name__ == "__main__":
         df = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/vowel_data_all_LabPhon.csv")
 
         # Configuration
-        epoch_range = 250
+        epoch_range = 500
         batches = 64
-        hidden_layer = 256*2
+        hidden_layer = 128
         parameters = [epoch_range, batches, hidden_layer]
 
         print(f"Epochs: {parameters[0]} Batch: {parameters[1]} Hidden: {parameters[2]}")
