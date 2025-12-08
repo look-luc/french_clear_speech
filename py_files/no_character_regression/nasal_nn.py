@@ -3,12 +3,12 @@ from regression_model import train_model
 
 if __name__ == "__main__":
     try:
-        df = pd.read_csv("../../data/vowel_data_all_LabPhon.csv")
+        df = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/vowel_data_all_LabPhon.csv")
 
         # Configuration
         epoch_range = 250
-        batches = 128
-        hidden_layer = 256
+        batches = 64
+        hidden_layer = 256*2
         parameters = [epoch_range, batches, hidden_layer]
 
         print(f"Epochs: {parameters[0]} Batch: {parameters[1]} Hidden: {parameters[2]}")

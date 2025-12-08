@@ -5,7 +5,7 @@ import torch.nn as nn
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
-from py_files.no_character_regression.regression_model import regression_model
+import regression_model
 
 
 def run_training(df, params, device):
@@ -13,22 +13,10 @@ def run_training(df, params, device):
     num_epochs, batch_size, hidden_dim = params
 
     # --- Data Prep ---
-    # unique_vowels = sorted(df["vowelSAMPA"].unique())
-    # vowel_to_index = {vowel: i for i, vowel in enumerate(unique_vowels)}
-    # df['vowel_index'] = df["vowelSAMPA"].map(vowel_to_index)
-    # num_vowels = len(unique_vowels)
-
-    # numerical_cols = [col for col in df.columns if col not in ["vowelSAMPA", 'vowel_index', "Target"]]
     numerical_cols = [col for col in df.columns if col not in ["vowelSAMPA", "Target"]]
     features_num = df[numerical_cols].values.astype(np.float32)
-    # cat_indices = df['vowel_index'].values.astype(np.int64)  # Ensure int64 for embeddings
     targets_num = df["Target"].values.astype(np.float32)
 
-    # X_cat_test
-    # cat_indices
-    # stratify = cat_indices
-    # X_cat_train
-    # Split
     X_num_train, X_num_test, y_train, y_test = train_test_split(
         features_num, targets_num, test_size=0.2, random_state=42
     )
@@ -44,16 +32,11 @@ def run_training(df, params, device):
     y_test_scaled = target_scaler.transform(y_test.reshape(-1, 1)).flatten()  # FIXED: Use transform only!
 
     t_X_num_train = torch.tensor(X_num_train_scaled, dtype=torch.float32).to(device)
-    # t_X_cat_train = torch.tensor(X_cat_train, dtype=torch.long).to(device)
     t_y_train = torch.tensor(y_train_scaled, dtype=torch.float32).unsqueeze(1).to(device)
 
     t_X_num_test = torch.tensor(X_num_test_scaled, dtype=torch.float32).to(device)
-    # t_X_cat_test = torch.tensor(X_cat_test, dtype=torch.long).to(device)
     t_y_test = torch.tensor(y_test_scaled, dtype=torch.float32).unsqueeze(1).to(device)
 
-    # Use TensorDataset (Standard PyTorch class, no need for custom class for simple arrays)
-    # train_dataset = TensorDataset(t_X_num_train, t_X_cat_train, t_y_train)
-    # val_dataset = TensorDataset(t_X_num_test, t_X_cat_test, t_y_test)
     train_dataset = TensorDataset(t_X_num_train, t_y_train)
     val_dataset = TensorDataset(t_X_num_test, t_y_test)
 
@@ -61,9 +44,8 @@ def run_training(df, params, device):
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
     # --- Model Setup ---
-    model = regression_model.regression_model(
+    model = regression_model.RegressionModel(
         num_numerical_features=X_num_train_scaled.shape[1],
-        # num_vowels=num_vowels,
         hidden_layer=hidden_dim,
     )
     model.to(device)
@@ -80,10 +62,10 @@ def run_training(df, params, device):
         model.train()
         train_loss = 0.0
 
-        for inputs_num, inputs_cat, batch_target in train_dataloader:
+        for inputs_num, batch_target in train_dataloader:
             # Data is already on device, so we skip the .to(device) step here
             optimizer.zero_grad()
-            outputs = model(inputs_num, inputs_cat)
+            outputs = model(inputs_num)
             loss = criterion(outputs, batch_target)
             loss.backward()
             optimizer.step()
@@ -95,8 +77,8 @@ def run_training(df, params, device):
         model.eval()
         val_loss = 0.0
         with torch.no_grad():
-            for val_inputs_num, val_inputs_cat, val_targets in val_dataloader:
-                val_outputs = model(val_inputs_num, val_inputs_cat)
+            for val_inputs_num, val_targets in val_dataloader:
+                val_outputs = model(val_inputs_num)
                 v_loss = criterion(val_outputs, val_targets)
                 val_loss += v_loss.item()
 
@@ -108,7 +90,6 @@ def run_training(df, params, device):
         # Save Best Model
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
-            # FIXED: Actually save the weights
             best_model_wts = copy.deepcopy(model.state_dict())
 
         if (epoch + 1) % 50 == 0:
