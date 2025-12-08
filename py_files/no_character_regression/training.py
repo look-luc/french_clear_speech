@@ -13,19 +13,24 @@ def run_training(df, params, device):
     num_epochs, batch_size, hidden_dim = params
 
     # --- Data Prep ---
-    unique_vowels = sorted(df["vowelSAMPA"].unique())
-    vowel_to_index = {vowel: i for i, vowel in enumerate(unique_vowels)}
-    df['vowel_index'] = df["vowelSAMPA"].map(vowel_to_index)
-    num_vowels = len(unique_vowels)
+    # unique_vowels = sorted(df["vowelSAMPA"].unique())
+    # vowel_to_index = {vowel: i for i, vowel in enumerate(unique_vowels)}
+    # df['vowel_index'] = df["vowelSAMPA"].map(vowel_to_index)
+    # num_vowels = len(unique_vowels)
 
-    numerical_cols = [col for col in df.columns if col not in ["vowelSAMPA", 'vowel_index', "Target"]]
+    # numerical_cols = [col for col in df.columns if col not in ["vowelSAMPA", 'vowel_index', "Target"]]
+    numerical_cols = [col for col in df.columns if col not in ["vowelSAMPA", "Target"]]
     features_num = df[numerical_cols].values.astype(np.float32)
-    cat_indices = df['vowel_index'].values.astype(np.int64)  # Ensure int64 for embeddings
+    # cat_indices = df['vowel_index'].values.astype(np.int64)  # Ensure int64 for embeddings
     targets_num = df["Target"].values.astype(np.float32)
 
+    # X_cat_test
+    # cat_indices
+    # stratify = cat_indices
+    # X_cat_train
     # Split
-    X_num_train, X_num_test, X_cat_train, X_cat_test, y_train, y_test = train_test_split(
-        features_num, cat_indices, targets_num, test_size=0.2, random_state=42, stratify=cat_indices
+    X_num_train, X_num_test, y_train, y_test = train_test_split(
+        features_num, targets_num, test_size=0.2, random_state=42
     )
 
     # Scale Inputs
@@ -39,16 +44,18 @@ def run_training(df, params, device):
     y_test_scaled = target_scaler.transform(y_test.reshape(-1, 1)).flatten()  # FIXED: Use transform only!
 
     t_X_num_train = torch.tensor(X_num_train_scaled, dtype=torch.float32).to(device)
-    t_X_cat_train = torch.tensor(X_cat_train, dtype=torch.long).to(device)
+    # t_X_cat_train = torch.tensor(X_cat_train, dtype=torch.long).to(device)
     t_y_train = torch.tensor(y_train_scaled, dtype=torch.float32).unsqueeze(1).to(device)
 
     t_X_num_test = torch.tensor(X_num_test_scaled, dtype=torch.float32).to(device)
-    t_X_cat_test = torch.tensor(X_cat_test, dtype=torch.long).to(device)
+    # t_X_cat_test = torch.tensor(X_cat_test, dtype=torch.long).to(device)
     t_y_test = torch.tensor(y_test_scaled, dtype=torch.float32).unsqueeze(1).to(device)
 
     # Use TensorDataset (Standard PyTorch class, no need for custom class for simple arrays)
-    train_dataset = TensorDataset(t_X_num_train, t_X_cat_train, t_y_train)
-    val_dataset = TensorDataset(t_X_num_test, t_X_cat_test, t_y_test)
+    # train_dataset = TensorDataset(t_X_num_train, t_X_cat_train, t_y_train)
+    # val_dataset = TensorDataset(t_X_num_test, t_X_cat_test, t_y_test)
+    train_dataset = TensorDataset(t_X_num_train, t_y_train)
+    val_dataset = TensorDataset(t_X_num_test, t_y_test)
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
@@ -56,7 +63,7 @@ def run_training(df, params, device):
     # --- Model Setup ---
     model = regression_model.regression_model(
         num_numerical_features=X_num_train_scaled.shape[1],
-        num_vowels=num_vowels,
+        # num_vowels=num_vowels,
         hidden_layer=hidden_dim,
     )
     model.to(device)

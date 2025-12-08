@@ -11,17 +11,17 @@ class regression_model(nn.Module):
     def __init__(
             self,
             num_numerical_features,
-            num_vowels,
+            # num_vowels,
             hidden_layer,
-            embedding_dim=5,
+            # embedding_dim=5,
             dropout_rate=0.2
     ):
         super(regression_model,self).__init__()
-        self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
-        combined_input_size = num_numerical_features + embedding_dim
+        # self.vowel_embedding = nn.Embedding(num_embeddings=num_vowels, embedding_dim=embedding_dim)
+        # combined_input_size = num_numerical_features + embedding_dim
 
         self.regressor = nn.Sequential(
-            nn.Linear(combined_input_size, hidden_layer),
+            nn.Linear(num_numerical_features, hidden_layer),
             nn.ReLU(),
             nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer, 1)
