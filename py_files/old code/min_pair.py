@@ -68,7 +68,7 @@ def lexique(data):
     nasalV_tenseV_min_pair_csv.to_csv("nasalV_tenseV_min_pair.csv")
 
 def main()->int:
-    data_lexique = getdata("/Users/lucdenardi/Desktop/python/french_clear_speach/Lexique383/Lexique383.csv")
+    data_lexique = getdata("/Lexique383/Lexique383.csv")
     lexique(data_lexique)
     return 0
 
