@@ -7,8 +7,8 @@ if __name__ == "__main__":
 
         # Configuration
         epoch_range = 500
-        batches = 64
-        hidden_layer = 128
+        batches = 512//2
+        hidden_layer = 512
         parameters = [epoch_range, batches, hidden_layer]
 
         print(f"Epochs: {parameters[0]} Batch: {parameters[1]} Hidden: {parameters[2]}")
