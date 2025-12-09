@@ -31,10 +31,6 @@ class RegressionModel(nn.Module):
             nn.BatchNorm1d(hidden_layer//2),
             nn.GELU(),
             nn.Dropout(dropout_rate),
-            nn.Linear(hidden_layer//2, hidden_layer // 2),
-            nn.BatchNorm1d(hidden_layer // 2),
-            nn.GELU(),
-            nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer//2, 1)
         )
 
