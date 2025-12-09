@@ -50,8 +50,10 @@ def run_training(df, params, device):
     model.to(device)
 
     criterion = nn.MSELoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-6)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.002, weight_decay=1e-5)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=0.5, patience=20
+    )
 
     best_val_loss = float('inf')
     best_model_wts = copy.deepcopy(model.state_dict())
