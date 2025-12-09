@@ -14,9 +14,9 @@ class RegressionModel(nn.Module):
             self,
             num_numerical_features,
             hidden_layer,
-            dropout_rate=0.3
+            dropout_rate=0.05
     ):
-        super(RegressionModel,self).__init__()
+        super().__init__()
 
         self.regressor = nn.Sequential(
             nn.Linear(num_numerical_features, hidden_layer),
