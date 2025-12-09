@@ -1,9 +1,10 @@
 import pandas as pd
+
 from regression_model import train_model
 
 if __name__ == "__main__":
     try:
-        df = pd.read_csv("/Users/lucdenardi/Desktop/python/french_clear_speach/data/vowel_data_all_LabPhon.csv")
+        df = pd.read_csv("../../data/vowel_data_all_LabPhon.csv")
 
         # Configuration
         epoch_range = 2000
