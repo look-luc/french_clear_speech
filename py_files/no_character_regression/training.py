@@ -7,7 +7,6 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
 import regression_model
 
-
 def run_training(df, params, device):
     # Unpack parameters
     num_epochs, batch_size, hidden_dim = params
@@ -51,7 +50,7 @@ def run_training(df, params, device):
     model.to(device)
 
     criterion = nn.MSELoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-6)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.01, weight_decay=1e-6)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10)
 
     best_val_loss = float('inf')
