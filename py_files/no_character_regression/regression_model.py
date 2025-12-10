@@ -33,13 +33,12 @@ class RegressionModel(nn.Module):
             self,
             num_numerical_features,
             hidden_layer,
-            dropout_rate=0.1
+            dropout_rate=0.2
     ):
         super().__init__()
 
         self.initial_projection = nn.Sequential(
             nn.Linear(num_numerical_features, hidden_layer),
-            nn.BatchNorm1d(hidden_layer),
             nn.GELU(),
             nn.Dropout(dropout_rate)
         )
@@ -51,7 +50,6 @@ class RegressionModel(nn.Module):
 
         self.final_regressor = nn.Sequential(
             nn.Linear(hidden_layer, hidden_layer // 2),
-            nn.BatchNorm1d(hidden_layer // 2),
             nn.GELU(),
             nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer // 2, 1)  # Output

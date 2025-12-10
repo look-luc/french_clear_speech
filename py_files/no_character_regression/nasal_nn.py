@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
         # Configuration
         epoch_range = 1000
-        batches = 32
+        batches = 64
         hidden_layer = 128
         parameters = [epoch_range, batches, hidden_layer]
 

@@ -53,7 +53,7 @@ def run_training(df, params, device):
     model.to(device)
 
     criterion = nn.SmoothL1Loss(reduction='mean', beta=1.0)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.002, weight_decay=1e-3)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode='min', factor=0.5, patience=20
     )
