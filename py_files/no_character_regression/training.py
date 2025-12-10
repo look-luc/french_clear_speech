@@ -1,4 +1,5 @@
 import copy
+import random
 
 import numpy as np
 import torch
@@ -16,6 +17,7 @@ def run_training(df, params, device):
 
     # --- Data Prep ---
     numerical_cols = [col for col in df.columns if col not in ["vowelSAMPA", "Target"]]
+    # random.shuffle(numerical_cols)
     features_num = df[numerical_cols].values.astype(np.float32)
     targets_num = df["Target"].values.astype(np.float32)
 
@@ -53,7 +55,7 @@ def run_training(df, params, device):
     model.to(device)
 
     criterion = nn.SmoothL1Loss(reduction='mean', beta=1.0)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-4)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-3)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer, T_0=100, T_mult=1, eta_min=1e-6
     )

@@ -33,7 +33,7 @@ class RegressionModel(nn.Module):
             self,
             num_numerical_features,
             hidden_layer,
-            dropout_rate=0.2
+            dropout_rate=0.3
     ):
         super().__init__()
 
@@ -46,7 +46,7 @@ class RegressionModel(nn.Module):
 
         self.residual_layers = nn.Sequential(
             ResidualBlock(hidden_layer, dropout_rate),
-            ResidualBlock(hidden_layer, dropout_rate),
+            # ResidualBlock(hidden_layer, dropout_rate),
         )
 
         self.final_regressor = nn.Sequential(
