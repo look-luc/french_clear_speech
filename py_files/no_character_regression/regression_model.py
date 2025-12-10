@@ -3,6 +3,9 @@ from torch import nn
 
 from training import run_training
 
+'''
+Setting the available GPU/CPU device
+'''
 if torch.backends.mps.is_available():
     device = torch.device("mps")
 elif torch.cuda.is_available():
