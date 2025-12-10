@@ -1,11 +1,14 @@
 import copy
+
 import numpy as np
 import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import TensorDataset, DataLoader
+
 import regression_model
+
 
 def run_training(df, params, device):
     # Unpack parameters
@@ -49,7 +52,7 @@ def run_training(df, params, device):
     )
     model.to(device)
 
-    criterion = nn.MSELoss()
+    criterion = nn.SmoothL1Loss(reduction='mean', beta=1.0)
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.002, weight_decay=1e-3)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode='min', factor=0.5, patience=20
