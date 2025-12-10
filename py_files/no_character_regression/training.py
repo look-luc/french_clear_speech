@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, RobustScaler
 from torch.utils.data import TensorDataset, DataLoader
 
 import regression_model
@@ -29,7 +29,7 @@ def run_training(df, params, device):
     X_num_test_scaled = scaler.transform(X_num_test)  # Use transform only!
 
     # Scale Targets
-    target_scaler = StandardScaler()
+    target_scaler = RobustScaler()
     y_train_scaled = target_scaler.fit_transform(y_train.reshape(-1, 1)).flatten()
     y_test_scaled = target_scaler.transform(y_test.reshape(-1, 1)).flatten()  # FIXED: Use transform only!
 
@@ -54,8 +54,8 @@ def run_training(df, params, device):
 
     criterion = nn.SmoothL1Loss(reduction='mean', beta=1.0)
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=20
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+        optimizer, T_0=100, T_mult=1, eta_min=1e-6
     )
 
     best_val_loss = float('inf')
@@ -72,6 +72,7 @@ def run_training(df, params, device):
             outputs = model(inputs_num)
             loss = criterion(outputs, batch_target)
             loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             train_loss += loss.item()
 

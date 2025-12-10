@@ -16,17 +16,17 @@ class ResidualBlock(nn.Module):
         super().__init__()
 
         self.block = nn.Sequential(
-            nn.Linear(dim, dim),
-            nn.BatchNorm1d(dim),
+            nn.LayerNorm(dim),
             nn.GELU(),
-            nn.Dropout(dropout_rate),
             nn.Linear(dim, dim),
-            nn.BatchNorm1d(dim)
+            nn.Dropout(dropout_rate),
+            nn.LayerNorm(dim),
+            nn.GELU(),
+            nn.Linear(dim, dim),
         )
-        self.activation = nn.GELU()
 
     def forward(self, x):
-        return self.activation(x + self.block(x))
+        return x + self.block(x)
 
 class RegressionModel(nn.Module):
     def __init__(
@@ -39,6 +39,7 @@ class RegressionModel(nn.Module):
 
         self.initial_projection = nn.Sequential(
             nn.Linear(num_numerical_features, hidden_layer),
+            nn.LayerNorm(hidden_layer),
             nn.GELU(),
             nn.Dropout(dropout_rate)
         )
@@ -50,6 +51,7 @@ class RegressionModel(nn.Module):
 
         self.final_regressor = nn.Sequential(
             nn.Linear(hidden_layer, hidden_layer // 2),
+            nn.LayerNorm(hidden_layer // 2),
             nn.GELU(),
             nn.Dropout(dropout_rate),
             nn.Linear(hidden_layer // 2, 1)  # Output
