@@ -46,7 +46,6 @@ class RegressionModel(nn.Module):
 
         self.residual_layers = nn.Sequential(
             ResidualBlock(hidden_layer, dropout_rate),
-            # ResidualBlock(hidden_layer, dropout_rate),
         )
 
         self.final_regressor = nn.Sequential(
