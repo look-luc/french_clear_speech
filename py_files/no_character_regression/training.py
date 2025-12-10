@@ -98,8 +98,8 @@ def run_training(df, params, device):
         scheduler.step(avg_val_loss)
 
         # Save Best Model
-        if val_accuracy >= best_val_acc:
-            best_val_acc = val_accuracy
+        if val_accuracy >= best_val_loss:
+            best_val_loss = val_accuracy
             best_model_wts = copy.deepcopy(model.state_dict())
 
         if (epoch + 1) % 50 == 0:
@@ -108,4 +108,4 @@ def run_training(df, params, device):
     # Load best weights before returning
     model.load_state_dict(best_model_wts)
 
-    return best_val_acc, avg_train_loss, avg_val_loss
+    return best_val_loss, avg_train_loss, avg_val_loss
