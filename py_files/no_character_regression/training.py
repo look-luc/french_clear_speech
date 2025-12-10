@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
 
 import regression_model
@@ -24,12 +24,12 @@ def run_training(df, params, device):
     )
 
     # Scale Inputs
-    scaler = MinMaxScaler()
+    scaler = StandardScaler()
     X_num_train_scaled = scaler.fit_transform(X_num_train)
     X_num_test_scaled = scaler.transform(X_num_test)  # Use transform only!
 
     # Scale Targets
-    target_scaler = MinMaxScaler()
+    target_scaler = StandardScaler()
     y_train_scaled = target_scaler.fit_transform(y_train.reshape(-1, 1)).flatten()
     y_test_scaled = target_scaler.transform(y_test.reshape(-1, 1)).flatten()  # FIXED: Use transform only!
 

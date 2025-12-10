@@ -1,4 +1,4 @@
-from sympy.printing.pytorch import torch
+import torch
 from torch import nn
 
 from training import run_training
@@ -45,9 +45,6 @@ class RegressionModel(nn.Module):
         )
 
         self.residual_layers = nn.Sequential(
-            ResidualBlock(hidden_layer, dropout_rate),
-            ResidualBlock(hidden_layer, dropout_rate),
-            ResidualBlock(hidden_layer, dropout_rate),
             ResidualBlock(hidden_layer, dropout_rate),
             ResidualBlock(hidden_layer, dropout_rate),
         )
