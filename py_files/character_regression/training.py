@@ -5,7 +5,7 @@ import torch.nn as nn
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
-import regression_model
+
 
 def run_training(df, params, device):
     # Unpack parameters
@@ -53,7 +53,7 @@ def run_training(df, params, device):
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
     # --- Model Setup ---
-    model = regression_model.regression_model(
+    model = py_files.character_regression.regression_model(
         num_numerical_features=X_num_train_scaled.shape[1],
         num_vowels=num_vowels,
         hidden_layer=hidden_dim,
