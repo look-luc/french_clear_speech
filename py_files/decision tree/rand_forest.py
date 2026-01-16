@@ -2,7 +2,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 
-
 class RandomForest_nasal:
     def __init__(self, dataset, label, num_estimators):
         self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(
