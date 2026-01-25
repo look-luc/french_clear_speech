@@ -19,10 +19,13 @@ def main():
         x_test=X_test,
         y_train=y_train,
         y_test=y_test,
-        num_estimators=100
+        num_estimators=75,
+        depth=200,
     )
 
-    print(regression_model.prediction())
+    accuracy, classification = regression_model.prediction()
+    print(f'accuracy:\n{accuracy}')
+    print(f'classification:\n{classification}')
     return 0
 
 
