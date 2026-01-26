@@ -50,15 +50,15 @@ def main():
         x_test=X_test,
         y_train=y_train,
         y_test=y_test,
-        num_estimators=150,
+        num_estimators=500,
         depth=500,
     )
     accuracy, classification, h_loss = model.prediction()
-    print("-------------Accuracy-------------")
+    print("-------------------Accuracy-------------------")
     print(accuracy)
-    print("-------------Classification Report-------------")
+    print("-------------Classification Report------------")
     print(classification)
-    print("-------------hamming_loss-------------")
+    print("------------------hamming loss-----------------")
     print(h_loss)
     return 0
 

@@ -11,7 +11,7 @@ class RandomForest_multi:
         self.model = RandomForestClassifier(
             n_estimators=self.num_estimators,
             max_depth=self.depth,
-            random_state=0,
+            random_state=42,
             oob_score=True)
         return self.model.fit(self.x_train, self.y_train)
 
