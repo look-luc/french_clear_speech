@@ -43,6 +43,23 @@ def main():
     y = df[['Target Task','Target Clarity','Target Nasality']]
 
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+
+    model = rand_forest_bi.RandomForest_multi(
+        x_train=X_train,
+        x_test=X_test,
+        y_train=y_train,
+        y_test=y_test,
+        num_estimators=150,
+        depth=500,
+    )
+    accuracy, classification, h_loss = model.prediction()
+    print("-------------Accuracy-------------")
+    print(accuracy)
+    print("-------------Classification Report-------------")
+    print(classification)
+    print("-------------hamming_loss-------------")
+    print(h_loss)
     return 0
 
 
