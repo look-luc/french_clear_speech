@@ -4,7 +4,7 @@ from regression_model import train_model
 
 if __name__ == "__main__":
     try:
-        df = pd.read_csv("../../data/vowel_data_all_LabPhon.csv")  # getting the data
+        df = pd.read_csv("../../data/vowel_data_nasality.csv")  # getting the data
 
         # Configuration
         epoch_range = 1500

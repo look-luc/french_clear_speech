@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 def show_tree(model, title: str, filename: str, df: pd.DataFrame):
     model_estimator = model.estimators_[0]
 
-    plt.figure()
+    plt.figure(figsize=(20, 10))
     plt.title(title)
     plot_tree(
         model_estimator,

@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 warnings.filterwarnings('ignore')
 
 def main():
-    df = pd.read_csv("../../data/vowel_data_all_LabPhon.csv")  # getting the data
+    df = pd.read_csv("../../data/vowel_data_nasality.csv")  # getting the data
 
     # starting to work on random forest
     x = df.drop(columns=['vowelSAMPA', 'Target'])
@@ -24,8 +24,27 @@ def main():
     )
 
     accuracy, classification = regression_model.prediction()
-    print(f'accuracy:\n{accuracy}')
-    print(f'classification:\n{classification}')
+    # print(f'accuracy:\n{accuracy}')
+    # print(f'classification:\n{classification}')
+
+    df = pd.read_csv("../../data/vowel_data_clear.csv")
+    x = df.drop(
+        columns=[
+            '  TASK',
+            'CLARITY',
+            'vowel',
+            'vowelSAMPA',
+            'Target Task',
+            'Target Clarity',
+            'Target Nasality'
+        ]
+    )
+
+    y = df[
+        'Target Task',
+        'Target Clarity',
+        'Target Nasality'
+    ]
     return 0
 
 
