@@ -24,8 +24,8 @@ def main():
     )
 
     accuracy, classification = regression_model.prediction()
-    # print(f'accuracy:\n{accuracy}')
-    # print(f'classification:\n{classification}')
+    print(f'accuracy:\n{accuracy}')
+    print(f'classification:\n{classification}')
 
     df = pd.read_csv("../../data/vowel_data_clear.csv")
     x = df.drop(
