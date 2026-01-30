@@ -50,8 +50,8 @@ def main():
         x_test=X_test,
         y_train=y_train,
         y_test=y_test,
-        num_estimators=500,
-        depth=1200,
+        num_estimators=700,
+        depth=1600,
     )
     accuracy, classification, h_loss = model.prediction()
     print("-------------------Accuracy-------------------")
