@@ -5,6 +5,11 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 warnings.filterwarnings('ignore')
 
+#TODO:
+# \box nasal to predict nasal
+# \box nasal to predict neighborhood density
+# \box nasal to predict clarity
+
 def main():
     df = pd.read_csv("../../data/vowel_data_nasality.csv")  # getting the data
 
@@ -42,7 +47,7 @@ def main():
 
     y = df[['Target Task','Target Clarity','Target Nasality']]
 
-    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
 
 
     model = rand_forest_bi.RandomForest_multi(
@@ -50,8 +55,8 @@ def main():
         x_test=X_test,
         y_train=y_train,
         y_test=y_test,
-        num_estimators=700,
-        depth=1600,
+        num_estimators=1050,
+        depth=3175,
     )
     accuracy, classification, h_loss = model.prediction()
     print("-------------------Accuracy-------------------")
