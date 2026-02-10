@@ -44,8 +44,8 @@ def main():
         x_test=X_test,
         y_train=y_train,
         y_test=y_test,
-        num_estimators=1000,
-        depth=15,
+        num_estimators=1200,
+        depth=10,
     )
 
     accuracy, classification, h_loss = classification_model.prediction()
