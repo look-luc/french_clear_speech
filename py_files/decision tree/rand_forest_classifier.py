@@ -34,6 +34,27 @@ class rand_tree():
 
 def main():
     df = pd.read_csv("../../data/ML Copy - FRENCH RESULTS - 2025 - Matching Datasets (VLOOKUP).csv")
+    x = df.drop(columns=['clarity','timepoint','Label'])
+    y = df['Label']
+
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+
+    classification_model = rand_tree(
+        x_train=X_train,
+        x_test=X_test,
+        y_train=y_train,
+        y_test=y_test,
+        num_estimators=100,
+        depth=50,
+    )
+
+    accuracy, classification, h_loss = classification_model.prediction()
+    print("-------------------Accuracy-------------------")
+    print(accuracy)
+    print("-------------Classification Report------------")
+    print(classification)
+    print("------------------hamming loss-----------------")
+    print(h_loss)
     return 0
 
 if __name__ == '__main__':
