@@ -1,13 +1,15 @@
 import warnings
-from sklearn.ensemble import RandomForestClassifier
+
 import pandas as pd
+from show_tree import importance_trees, permutation
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, hamming_loss
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, accuracy_score, hamming_loss
-from show_tree import importance_trees
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
-class rand_tree():
+
+class rand_tree:
     def __init__(self, x_train, x_test, y_train, y_test, num_estimators, depth):
         self.x_train = x_train
         self.x_test = x_test
@@ -21,7 +23,8 @@ class rand_tree():
             n_estimators=self.num_estimators,
             max_depth=self.depth,
             random_state=42,
-            oob_score=True)
+            oob_score=True,
+        )
         return self.model.fit(self.x_train, self.y_train)
 
     def prediction(self):
@@ -41,11 +44,15 @@ class rand_tree():
 
 
 def main():
-    df = pd.read_csv("../../data/ML Copy - FRENCH RESULTS - 2025 - Matching Datasets (VLOOKUP).csv")
-    x = df.drop(columns=['clarity','timepoint','Label'])
-    y = df['Label']
+    df = pd.read_csv(
+        "../../data/ML Copy - FRENCH RESULTS - 2025 - Matching Datasets (VLOOKUP).csv"
+    )
+    x = df.drop(columns=["clarity", "timepoint", "Label"])
+    y = df["Label"]
 
-    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.3, random_state=42
+    )
 
     classification_model = rand_tree(
         x_train=X_train,
@@ -56,7 +63,7 @@ def main():
         depth=10,
     )
 
-    accuracy, classification, h_loss = classification_model.prediction()
+    classification, accuracy, h_loss = classification_model.prediction()
     print("-------------------Accuracy-------------------")
     print(accuracy)
     print("-------------Classification Report------------")
@@ -70,11 +77,23 @@ def main():
         classification_model,
         "importance features",
         "importance",
-        'features',
-        'Mean decrease in impurity',
-        x
+        "features",
+        "Mean decrease in impurity",
+        x,
+    )
+
+    permutation(
+        classification_model.model,
+        "Importance features via permutation on full model",
+        "permutation",
+        "features",
+        "Mean accuracy decrease",
+        x,
+        X_test,
+        y_test,
     )
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
