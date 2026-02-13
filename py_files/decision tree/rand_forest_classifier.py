@@ -3,6 +3,7 @@ from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score, hamming_loss
+from show_tree import importance_trees
 
 warnings.filterwarnings('ignore')
 
@@ -62,7 +63,14 @@ def main():
 
     print(len(classification_model.getattr()))
 
-
+    importance_trees(
+        classification_model,
+        "importance features",
+        "importance",
+        'features',
+        'Mean decrease in impurity',
+        x
+    )
     return 0
 
 if __name__ == '__main__':

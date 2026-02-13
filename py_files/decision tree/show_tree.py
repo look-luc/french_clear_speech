@@ -16,3 +16,4 @@ def importance_trees(model, title:str, filename:str, x_label:str, y_label:str, X
     ax.set_ylabel(y_label)
     fig.tight_layout()
     plt.savefig(f"{filename}.png")
+    print(f"graph made and saved under {filename}.png")
