@@ -33,8 +33,11 @@ class rand_tree():
 
         return classification, subset_acc, h_loss
 
-    def getattr(self):
+    def getEstimator(self):
         return self.model.estimators_
+
+    def importance(self):
+        return self.model.feature_importances_
 
 
 def main():
@@ -61,7 +64,7 @@ def main():
     print("------------------hamming loss-----------------")
     print(h_loss)
 
-    print(len(classification_model.getattr()))
+    print(len(classification_model.getEstimator()))
 
     importance_trees(
         classification_model,

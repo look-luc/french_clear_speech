@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def importance_trees(model, title:str, filename:str, x_label:str, y_label:str, X:pd.DataFrame):
-    importances = model.feature_importances_
-    std = np.std([tree.feature_importances_ for tree in model.estimators_], axis=0)
+    importances = model.importance()
+    std = np.std([tree.feature_importances_ for tree in model.getEstimator()], axis=0)
 
     forest_importances = pd.Series(importances, index=X.columns)
 
