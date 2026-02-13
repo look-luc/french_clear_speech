@@ -47,6 +47,28 @@ def main():
     df = pd.read_csv(
         "../../data/ML Copy - FRENCH RESULTS - 2025 - Matching Datasets (VLOOKUP).csv"
     )
+    # x = df.drop(
+    #     columns=[
+    #         "clarity",
+    #         "timepoint",
+    #         "freq_f1",
+    #         "amp_f1",
+    #         "freq_f2",
+    #         "amp_f2",
+    #         "width_f2",
+    #         "freq_f3",
+    #         "amp_f3",
+    #         "width_f3",
+    #         "amp_p0",
+    #         "freq_p0",
+    #         "p0prominence",
+    #         "vwl_amp_rms",
+    #         "vwl_duration",
+    #         "appendix_dur",
+    #         "Label",
+    #     ]
+    # )
+
     x = df.drop(columns=["clarity", "timepoint", "Label"])
     y = df["Label"]
 
