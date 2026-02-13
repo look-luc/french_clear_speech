@@ -32,6 +32,10 @@ class rand_tree():
 
         return classification, subset_acc, h_loss
 
+    def getattr(self):
+        return self.model.estimators_
+
+
 def main():
     df = pd.read_csv("../../data/ML Copy - FRENCH RESULTS - 2025 - Matching Datasets (VLOOKUP).csv")
     x = df.drop(columns=['clarity','timepoint','Label'])
@@ -55,6 +59,10 @@ def main():
     print(classification)
     print("------------------hamming loss-----------------")
     print(h_loss)
+
+    print(len(classification_model.getattr()))
+
+
     return 0
 
 if __name__ == '__main__':
