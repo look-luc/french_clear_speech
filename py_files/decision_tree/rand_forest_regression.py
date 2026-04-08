@@ -15,7 +15,8 @@ class RandomForest_nasal:
             oob_score=True,
             n_jobs=-1
         )
-        return self.model.fit(self.x_train, self.y_train)
+        self.model.fit(self.x_train, self.y_train)
+        return self.model
 
     def prediction(self):
         if self.model is None:

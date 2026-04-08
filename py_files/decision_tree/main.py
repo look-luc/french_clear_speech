@@ -34,18 +34,23 @@ def main():
         depth=30
     )
 
-    accuracy, classification = regression_model.prediction()
-    print(f'accuracy:\n{accuracy}')
-    print(f'classification:\n{classification}')
+    regression_model.modeling()
+    accuracy, report, oob = regression_model.prediction()
 
+    print(f"Validation Accuracy: {accuracy:.4f}")
+    print(f"OOB Score:           {oob:.4f}")
+    print(f"\nClassification Report:\n{report}")
+
+    # Feature Importance Visualizations
     importance_trees(
         regression_model,
-        "importance features",
+        "MDI Feature Importance",
         "importance_with_tache",
         "features",
         "Mean decrease in impurity",
-        x,
+        x
     )
+
     permutation(
         regression_model.model,
         "Importance features via permutation on full model",
