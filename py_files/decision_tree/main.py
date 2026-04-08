@@ -1,5 +1,7 @@
 import warnings
 
+import pandas as pd
+
 warnings.filterwarnings('ignore')
 
 #TODO:
@@ -8,7 +10,8 @@ warnings.filterwarnings('ignore')
 # \box nasal to predict clarity
 
 def main():
-
+    ds = pd.read_csv("./data/tache_lecture.csv")
+    print(ds.head())
     return 0
 
 
