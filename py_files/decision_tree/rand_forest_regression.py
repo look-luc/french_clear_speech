@@ -21,3 +21,9 @@ class RandomForest_nasal:
         self.accuracy = accuracy_score(self.y_test, self.x_prediction)
         self.classification = classification_report(self.y_test, self.x_prediction)
         return self.accuracy, self.classification
+
+    def getEstimator(self):
+        return self.model.estimators_
+
+    def importance(self):
+        return self.model.feature_importances_
