@@ -11,19 +11,27 @@ class RandomForest_nasal:
         self.model = RandomForestClassifier(
             n_estimators=self.num_estimators,
             max_depth=self.depth,
-            random_state=0,
-            oob_score=True)
+            random_state=42,
+            oob_score=True,
+            n_jobs=-1
+        )
         return self.model.fit(self.x_train, self.y_train)
 
     def prediction(self):
-        self.done_modeling = self.modeling()
-        self.x_prediction = self.done_modeling.predict(self.x_test)
-        self.accuracy = accuracy_score(self.y_test, self.x_prediction)
-        self.classification = classification_report(self.y_test, self.x_prediction)
-        return self.accuracy, self.classification
+        if self.model is None:
+            raise ValueError("Model has not been fitted yet. Call .fit() first.")
+
+        predictions = self.model.predict(self.x_test)
+        accuracy = accuracy_score(self.y_test, predictions)
+        report = classification_report(self.y_test, predictions)
+        oob_score = self.model.oob_score_
+
+        return accuracy, report, oob_score
 
     def getEstimator(self):
         return self.model.estimators_
 
     def importance(self):
+        if self.model is None:
+            return None
         return self.model.feature_importances_
