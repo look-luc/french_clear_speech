@@ -10,7 +10,8 @@
 
 \begin{document}
     \singlespacing
-    \section*{Method}
+    \section*{Tache Only Data}
+    \subsection*{Method}
     \indent
     \indent
     The model is tasked to check whether or not the nasal vowel was normal or clear
@@ -23,7 +24,7 @@
     $70\%$ $30\%$ split on the data for the training and test sets. To check how the
     model is doing, clacultions of accuract, hamming loss, F1, precision, recall,
     macro and weighted average, and classification report.
-    \section*{Rseults}
+    \subsection*{Rseults}
     \begin{table}[ht!]
         \centering
         \caption{Classification Report}
@@ -76,10 +77,7 @@
     "Mean Decreased in Impurity" which, according to skilearn themselves, is computed
     by the mean and standard deviation of accumulation of the impurity decrease within
     each tree. MDI calculates the total reduction of node impurity across all of
-    the trees. There is no one feature that solely decides the random forest that
-    does the prediction. Using the MDI, shows how each feature contributes in the
-    decision of the prediction. The drawback with using MDI is that it can
-    biased towards numerical features or columns with many unique values.
+    the trees.
 
     \begin{wrapfigure}
         {r}{0.5\textwidth}
@@ -90,6 +88,10 @@
         \caption{Feature importances using permutation}
         \label{fig:permunation}
     \end{wrapfigure}
+    There were no one feature that solely decides the random forest that does
+    the prediction. Using the MDI, shows how each feature contributes in the
+    decision of the prediction. The drawback with using MDI is that it can biased
+    towards numerical features or columns with many unique values.
 
     \indent
     Figure~\ref{fig:permunation} shows the importance of the features using permutations
@@ -99,4 +101,65 @@
     account of biases and check each feature and their contribution. We can see the
     two features that are helping the model make the predictions, being the
     vowel amplitude rms and the appendix duration.
+
+    \section*{Tache and Lecture Data}
+    \subsection*{Method}
+    \indent
+    \indent
+    The model is tasked to check whether or not the nasal vowel was normal or
+    clear speech. The architecture used was a Random Forest classifier from sklearn.
+    The model has 1000 estimaters each with a depth of 30. The labels used in
+    training are freq f1,amp f1,width f1, freq f2, amp f2, width f2, freq f3, amp
+    f3, width f3, amp p0, freq p0, p0prominence,a1p0,a3p0,vwl amp rms,vwl duration,appendix
+    dur. The search query, speaker, task, clarity, ND, timepoint, word, vowel,
+    and target columns were dropped for the training set and the only column
+    used to check the prediction was the label column. There is a $80\%$ $20\%$ split
+    on the data for the training and test sets. To check how the model is doing, clacultions
+    of accuracy on the validation set, precision, recall, F1-score, macro average,
+    weighted average, and out of the box (OOB) score.
+
+    \subsection*{Results}
+    The full report is shown in table~\ref{table:tache_lecture_report}. We can
+    see the increase in all values with across the board wavering at least
+    around $80\%$. This is a big gain in the classification regards compared to just
+    the lecture data due to the increase of data, as we can see that for the
+    normal has increased to $411$ entries to support and in the clear has
+    increased to $394$ entries.
+
+    \begin{table}[ht!]
+        \centering
+        \caption{Classification Report}
+        \label{table:tache_lecture_report}
+        \begin{tabular}{|l|c|c|c|c|}
+            \hline
+            \textbf{type} & \textbf{precision} & \textbf{recall} & \textbf{f1-score} & \textbf{support} \\
+            \hline
+            \hline
+            $0$ (clear)   & $80\%$             & $82\%$          & $81\%$            & $394$            \\
+            \hline
+            $1$ (normal)  & $82\%$             & $81\%$          & $81\%$            & $411$            \\
+            \hline
+            accuracy      &                    &                 & $81\%$            & $805$            \\
+            \hline
+            macro avg     & $81\%$             & $81\%$          & $81\%$            & $805$            \\
+            \hline
+            weighted avg  & $81\%$             & $81\%$          & $81\%$            & $805$            \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    Here is the table for the remaining calculations:
+
+    \begin{table}[ht!]
+        \begin{tabular}{|l|c|c|c|c|}
+            \hline
+            \textbf{type}       & \textbf{result} \\
+            \hline
+            \hline
+            Validation accuracy & $81.12\%$       \\
+            \hline
+            OOB score           & $80.37\%$       \\
+            \hline
+        \end{tabular}
+    \end{table}
 \end{document}
