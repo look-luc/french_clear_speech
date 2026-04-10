@@ -8,14 +8,10 @@ from show_tree import importance_trees, permutation
 
 warnings.filterwarnings('ignore')
 
-#TODO:
-# \box nasal to predict nasal
-# \box nasal to predict neighborhood density
-# \box nasal to predict clarity
-
 def main():
     df = pd.read_csv("../../data/tache_lecture.csv")
-    df = df[df["timepoint"] != 3]
+    df = df[df["timepoint"] == 3]
+    df = df[df['task'] == 'tache']
     x = df.drop(
         columns=[
             'Search Query', 'speaker', 'task', 'clarity', 'ND', 'timepoint', 'word', 'vowel', 'target'
@@ -23,7 +19,11 @@ def main():
     )
     y = df['target']
 
-    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    if "appendix" in df.columns:
+        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+    else:
+        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
     regression_model = rand_forest_regression.RandomForest_nasal(
         x_train=X_train,
