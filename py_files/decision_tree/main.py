@@ -8,6 +8,11 @@ from show_tree import importance_trees, permutation
 
 warnings.filterwarnings('ignore')
 
+'''
+forest model without appendix duration, splitting the appendix label in two
+another forest model for each appendix label is constant and testing with appendix dur
+'''
+
 def main():
     df = pd.read_csv("../../data/tache_lecture.csv")
     df = df[df["timepoint"] == 3]
