@@ -119,13 +119,6 @@
     weighted average, and out of the box (OOB) score.
 
     \subsection*{Results}
-    The full report is shown in table~\ref{table:tache_lecture_report}. We can
-    see the increase in all values with across the board wavering at least
-    around $80\%$. This is a big gain in the classification regards compared to just
-    the lecture data due to the increase of data, as we can see that for the
-    normal has increased to $411$ entries to support and in the clear has
-    increased to $394$ entries.
-
     \begin{table}[ht!]
         \centering
         \caption{Classification Report}
@@ -148,9 +141,26 @@
         \end{tabular}
     \end{table}
 
-    Here is the table for the remaining calculations:
+    The full report is shown in table~\ref{table:tache_lecture_report}. We can see
+    the increase in all values with across the board wavering at least around $80
+    \%$. This is a big gain in the classification regards compared to just the
+    lecture data due to the increase of data, as we can see that for the normal has
+    increased to $411$ entries to support and in the clear has increased to $394$
+    entries.
+
+    Table~\ref{table:other_results} provides the val accuracy and the OOB score.
+    According to the Scikit-learn official website, the OOB score (or error from
+    their website) is as follows:
+    \begin{quotation}
+        \noindent
+        the average error for each $z_{i}= (x_{i}y_{i})$ calculated using predictions
+        from the trees that do not contain $z_{i}$ in their respective bootstrap sample.
+    \end{quotation}
 
     \begin{table}[ht!]
+        \centering
+        \caption{Other Report}
+        \label{table:other_results}
         \begin{tabular}{|l|c|c|c|c|}
             \hline
             \textbf{type}       & \textbf{result} \\
@@ -162,4 +172,39 @@
             \hline
         \end{tabular}
     \end{table}
+    \begin{wrapfigure}
+        {r}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{
+            ../py_files/decision_tree/importance_with_tache.png
+        }
+        \caption{Feature importances using MDI}
+        \label{fig:combined_importance}
+    \end{wrapfigure}
+
+    The validation accuracy is just how well the model did on the set that was
+    not seen in the training set. Figure~\ref{fig:combined_importance} shows what
+    feature plays a factor in the random forest.
+
+    In this case, it is the vowel amplitude rms. We can see that the appendix duration
+    is up next with the second feature that the random forest model will look at.
+    Interestingly, the features of nasality does not play a role in the decision.
+
+    \begin{wrapfigure}
+        {r}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{
+            ../py_files/decision_tree/permutation_with_tache.png
+        }
+        \caption{Feature importances using permutation}
+        \label{fig:combined_permunation}
+    \end{wrapfigure}
+
+    In Figure~\ref{fig:combined_permunation}, we can see how much the model relies
+    on the vowel amplitude ams and the appendix duration where they are almost the
+    same at $0.14$. In both figures, we can see a sharp drop in the third feature
+    of the actual vowel duration, at around $0.08$. We can see in figure~\ref{fig:combined_permunation}
+    that the features of nasality other than P0 are low, not reaching $0.02$. The
+    amplitude and frequency of P0 is far lower in the chain of features but it is
+    interesting that it comes before the formants of the vowel and a1-p0
 \end{document}

@@ -1,7 +1,9 @@
 # Fdb version 4
-["pdflatex"] 1775833987.35609 "main.tex" "main.pdf" "main" 1775833987.90636 0
+["pdflatex"] 1775835806.80168 "main.tex" "main.pdf" "main" 1775835807.36199 0
   "../py_files/decision_tree/importance.png" 1771020112.71648 26749 2a40343027b0ecd8e7915bf8d7a24b3c ""
+  "../py_files/decision_tree/importance_with_tache.png" 1775832607.08843 26980 1b01d39bb3b4f0b8a3ebc0cbed93590e ""
   "../py_files/decision_tree/permutation.png" 1771020121.49748 28019 9556516a5572f6728aebfb7cc28f63e5 ""
+  "../py_files/decision_tree/permutation_with_tache.png" 1775832622.22798 28963 40398491b8f570b1d62daa0cf80f8540 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/adobe/helvetic/phvb7t.tfm" 1136768653 2240 eb56c13537f4d8a0bd3fafc25572b1bd ""
@@ -25,6 +27,7 @@
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm" 1136768653 1116 933a60c408fc0a863a92debe84b2d294 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1136768653 1120 8b7d695260f3cff42e636090a8002094 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb" 1248133631 36741 fa121aac0049305630cf160b86157ee4 ""
+  "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1248133631 35469 70d41d2b9ea31d5d813066df7c99281c ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1248133631 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb" 1136849748 35941 f27169cc74234d5bd5e4cca5abafaabb ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb" 1136849748 44648 23115b2a545ebfe2c526c3ca99db8b95 ""
@@ -61,8 +64,8 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1769366432 5467155 19efa205003f9ecad95fbbaa6ff24da1 ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1741450574 3345740 46b66fdb0378f7bf5921b5eabf1762b8 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "main.aux" 1775833987.87612 751 ac6005c5fec43d2dfa05efd204410535 "pdflatex"
-  "main.tex" 1775833984.33047 7729 5f65eced5a122d96d68c5d9f51a38347 ""
+  "main.aux" 1775835807.32917 1304 0034994b385341598d3127c750c41239 "pdflatex"
+  "main.tex" 1775835806.77541 9849 dab570432fb2b46b8ffddccb9109cce8 ""
   (generated)
   "main.aux"
   "main.log"
