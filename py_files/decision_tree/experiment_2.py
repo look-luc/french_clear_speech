@@ -10,7 +10,17 @@ def main():
 
     nasal_appendix = full_data[
         full_data["appendix"] == 'n' or full_data["appendix"] == 'n+c'
-        ].drop('timepoint', axis=1)
+    ].drop([
+        'timepoint', 'appendix', 'appendix_dur'
+    ], axis=1)
+
+    creak_appendix = full_data[
+        full_data["appendix"] == 'c' or full_data["appendix"] == 'n+c'
+        ].drop([
+        'timepoint', 'appendix', 'appendix_dur'
+    ], axis=1)
+
+
     return 0
 
 
