@@ -9,19 +9,17 @@ from show_tree import importance_trees, permutation
 warnings.filterwarnings('ignore')
 
 def main():
-    full_data = pd.read_csv("../../data/tache_lecture.csv").drop("clarity", axis=1)
+    full_data = pd.read_csv("../../data/controlled.csv").drop("clarity", axis=1)
+
     full_data = full_data[full_data["timepoint"] == 3]
 
-    nasal_appendix = full_data.drop(
-        ['timepoint', 'appendix', 'appendix_dur', 'nasal_app', 'creak_app', 'clarity', 'target'],
-        axis=1
-    )
+    cols_to_drop = ['timepoint', 'vowel', 'appendix', 'appendix_dur', 'nasal_app', 'creak_app', 'target']
+
+    nasal_appendix = full_data.drop(columns=cols_to_drop)
     nasal_target = full_data['nasal_app']
 
-    creak_appendix = full_data.drop(
-        ['timepoint', 'appendix', 'appendix_dur', 'nasal_app', 'creak_app', 'clarity', 'target'],
-        axis=1
-    )
+    # Dropping columns for the creak experiment
+    creak_appendix = full_data.drop(columns=cols_to_drop)
     creak_target = full_data['creak_app']
 
     data = [nasal_appendix, creak_appendix]
