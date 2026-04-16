@@ -1,8 +1,8 @@
 import pandas as pd
+import rand_forest_regression
 from sklearn.model_selection import train_test_split
 
 import rand_forest_bi
-import rand_forest_regression
 
 
 def pre_tache():

@@ -1,10 +1,9 @@
 import warnings
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
-
 import rand_forest_regression
 from show_tree import importance_trees, permutation
+from sklearn.model_selection import train_test_split
 
 warnings.filterwarnings('ignore')
 
