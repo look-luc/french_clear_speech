@@ -43,11 +43,11 @@ def main():
         regression_model.modeling()
         accuracy, report, oob = regression_model.prediction()
 
-        print(f"Validation Accuracy: {accuracy:.4f}")
-        print(f"OOB Score:           {oob:.4f}")
-        print(f"\nClassification Report:\n{report}")
+        with open(f"{experiment}_scores.txt", "w") as file:
+            file.write(f"Validation Accuracy: {accuracy:.4f}\n")
+            file.write(f"OOB Score:           {oob:.4f}\n")
+            file.write(f"\nClassification Report:\n{report}")
 
-        # Feature Importance Visualizations
         importance_trees(
             regression_model,
             "MDI Feature Importance",
