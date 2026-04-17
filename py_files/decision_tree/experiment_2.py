@@ -9,22 +9,22 @@ from show_tree import importance_trees, permutation
 warnings.filterwarnings('ignore')
 
 def main():
-    full_data = pd.read_csv("../../data/controlled.csv").drop("clarity", axis=1)
+    controll_data = pd.read_csv("../../data/full_data.csv").drop("clarity", axis=1)
 
-    full_data = full_data[full_data["timepoint"] == 3]
+    full_data = controll_data[controll_data["timepoint"] == 3]
 
-    cols_to_drop = ['timepoint', 'vowel', 'appendix', 'appendix_dur', 'nasal_app', 'creak_app', 'target']
+    nasal_appendix = full_data.drop(columns=["timepoint", "creak_app", "target"])
+    nasal_target = full_data["target"]
 
-    nasal_appendix = full_data.drop(columns=cols_to_drop)
-    nasal_target = full_data['nasal_app']
+    creak_appendix = full_data.drop(columns=["timepoint", "nasal_app", "target"])
+    creak_target = full_data["target"]
 
-    # Dropping columns for the creak experiment
-    creak_appendix = full_data.drop(columns=cols_to_drop)
-    creak_target = full_data['creak_app']
+    both = full_data.drop(columns=["timepoint", "vwl_duration", "target"])
+    both_target = full_data["target"]
 
-    data = [nasal_appendix, creak_appendix]
-    targets = [nasal_target, creak_target]
-    exp = ["nasal_only", "creak_only"]
+    data = [nasal_appendix, creak_appendix, both]
+    targets = [nasal_target, creak_target, both_target]
+    exp = ["nasal_only", "creak_only", "both"]
 
     for x, y, experiment in zip(data, targets, exp):
         X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
