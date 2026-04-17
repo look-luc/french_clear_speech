@@ -13,13 +13,13 @@ def main():
 
     full_data = controll_data[controll_data["timepoint"] == 3]
 
-    nasal_appendix = full_data.drop(columns=["timepoint", "creak_app", "target"])
+    nasal_appendix = full_data.drop(columns=["timepoint", "appendix", "creak_app", "target"])
     nasal_target = full_data["target"]
 
-    creak_appendix = full_data.drop(columns=["timepoint", "nasal_app", "target"])
+    creak_appendix = full_data.drop(columns=["timepoint", "appendix", "nasal_app", "target"])
     creak_target = full_data["target"]
 
-    both = full_data.drop(columns=["timepoint", "vwl_duration", "target"])
+    both = full_data.drop(columns=["timepoint", "vwl_duration", "appendix", "target"])
     both_target = full_data["target"]
 
     data = [nasal_appendix, creak_appendix, both]
