@@ -9,6 +9,29 @@
 \usepackage{listings}
 
 \begin{document}
-	\singlespacing
-	\setlength{\parindent}{36pt}
+    \singlespacing
+    \setlength{\parindent}{36pt}
+
+    \section{Experiments}
+    In subsections~\ref{exp1} and \ref{exp2}, the models did not see the other appendix
+    type column only the column associated to the experiment.
+    \subsection{experiment 1}
+    \label{exp1} This is nasal appendix only with appendix duration. Model stayed
+    the same. The appendix labels were taken out after splitting into two
+    columns with binary representation. The nasal appendix was determined by a $1$
+    if the appendix label column was either ``n'' or ``n+c'' and a $0$ otherwise.
+    \subsection{experiment 2}
+    \label{exp2} This is creak appendix only with appendix duration. Model stayed
+    the same. The appendix labels were taken out after splitting into two
+    columns with binary representation. The creak appendix was determined by a $1$
+    if the appendix label column was either ``c'' or ``n+c'' and a $0$ otherwise.
+    \subsection{experiment 3}
+    This was with both appendix type but removing the appendix duration to test
+    what label was the model looking at more. The model had access to both appendix
+    type binary columns.
+
+    \section{Results}
+    \subsection{Nasal only}
+    \subsection{Creak only}
+    \subsection{Both}
 \end{document}
