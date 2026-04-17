@@ -99,9 +99,10 @@
 
     In figure~\ref{fig:permutation_nasal}, we see that the vowel amplitude rms is
     still the feature. The appendix and vowel duration has decreased. It is interesting
-    that for both figures, the appendix tag did not have much of an impact
+    that for both figures, the appendix tag did not have much of an impact.
 
     \subsection{Creak only}
+    \subsubsection{Metrics}
     \begin{table}[ht!]
         \centering
         \caption{Classification Report for Creak Appendix Model}
@@ -140,5 +141,101 @@
         \end{tabular}
     \end{table}
 
+    Table~\ref{table:creak only} is the metric calculations for the model that
+    only saw the creak appendix type. Table~\ref{table:other_results_creak} is the
+    validation accuracy and the out-of-box scores. The model has not performed
+    better from looking at both appendix types.
+
+    \subsubsection{Graphs}
+    In figure~\ref{fig:importance_nasal} is the imporatance for the nasal
+    appendix. We can see that the appendix\_dur and vowel duration has decreased in
+    amplitude but the actual tag was not useful.
+    \begin{figure}[ht!]
+        \centering
+        \caption{Feature importances using MDI for the creak appendix model.}
+        \label{fig:importance_creak}
+        \includegraphics[width=0.5\textwidth]{
+            /Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/importance_creak_only.png
+        }
+    \end{figure}
+
+    \begin{figure}[ht!]
+        \centering
+        \caption{Feature permutation using MDI for the creak appendix model.}
+        \label{fig:permutation_creak}
+        \includegraphics[width=0.5\textwidth]{
+            /Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/permutation_nasal_only.png
+        }
+    \end{figure}
+    In figure~\ref{fig:permutation_nasal}, we see that the vowel amplitude rms
+    is still the feature. The appendix and vowel duration has decreased. It is
+    interesting that for both figures, the appendix tag did not have much of an impact.
+
     \subsection{Both}
+    \subsubsection{Metrics}
+    \begin{table}[ht!]
+        \centering
+        \caption{Classification Report for Creak Appendix Model}
+        \label{table:both}
+        \begin{tabular}{|l|c|c|c|c|}
+            \hline
+            \textbf{type} & \textbf{precision} & \textbf{recall} & \textbf{f1-score} & \textbf{support} \\
+            \hline
+            \hline
+            $0$ (clear)   & $72\%$             & $73\%$          & $72\%$            & $211$            \\
+            \hline
+            $1$ (normal)  & $69\%$             & $69\%$          & $69\%$            & $192$            \\
+            \hline
+            accuracy      &                    &                 & $71\%$            & $403$            \\
+            \hline
+            macro avg     & $71\%$             & $71\%$          & $71\%$            & $403$            \\
+            \hline
+            weighted avg  & $71\%$             & $71\%$          & $71\%$            & $403$            \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \begin{table}[ht!]
+        \centering
+        \caption{Other Report for Creak Appendix Model}
+        \label{table:other_results_both}
+        \begin{tabular}{|l|c|}
+            \hline
+            \textbf{type}       & \textbf{result} \\
+            \hline
+            \hline
+            Validation accuracy & $70.72\%$       \\
+            \hline
+            OOB score           & $72.75\%$       \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    Table~\ref{table:both} is the metric calculations for the model that only saw
+    the creak appendix type. Table~\ref{table:other_results_both} is the
+    validation accuracy and the out-of-box scores. The model has not performed better
+    from looking at both appendix types without looking at the appendix duration.
+
+    \subsubsection{Graphs}
+    \begin{figure}[ht!]
+        \centering
+        \caption{Feature importances using MDI.}
+        \label{fig:importance_both}
+        \includegraphics[width=0.5\textwidth]{
+            /Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/importance_both.png
+        }
+    \end{figure}
+
+    The vowel duration rms is still the main feature that the model looks at. but
+    looking at figure~\ref{fig:permutation_both} that the nasal appendix has played
+    some role when it comes to the permutation.
+
+    \begin{figure}[ht!]
+        \centering
+        \caption{Feature permutation using MDI.}
+        \label{fig:permutation_both}
+        \includegraphics[width=0.5\textwidth]{
+            /Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/permutation_both.png
+        }
+    \end{figure}
 \end{document}

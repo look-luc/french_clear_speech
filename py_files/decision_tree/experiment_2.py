@@ -19,7 +19,7 @@ def main():
     creak_appendix = full_data.drop(columns=["timepoint", "appendix", "nasal_app", "target"])
     creak_target = full_data["target"]
 
-    both = full_data.drop(columns=["timepoint", "vwl_duration", "appendix", "target"])
+    both = full_data.drop(columns=["timepoint", "vwl_duration","appendix_dur", "appendix", "target"])
     both_target = full_data["target"]
 
     data = [nasal_appendix, creak_appendix, both]

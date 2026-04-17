@@ -1,7 +1,10 @@
 # Fdb version 4
-["pdflatex"] 1776454482.94363 "main.tex" "main.pdf" "main" 1776454484.02711 0
-  "/Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/importance_nasal_only.png" 1776435378.05364 27832 394a3413f695bbfe478ec2489249afb5 ""
-  "/Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/permutation_nasal_only.png" 1776435399.30298 29494 b4587658190b62d26eaf95f90f0fddf9 ""
+["pdflatex"] 1776455445.35548 "main.tex" "main.pdf" "main" 1776455447.02025 0
+  "/Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/importance_both.png" 1776455122.88855 26536 5ac191f10182e7e5894c5f38a4d449a0 ""
+  "/Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/importance_creak_only.png" 1776455094.89598 28028 2f223fe93dd818cc795226c22af648ea ""
+  "/Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/importance_nasal_only.png" 1776455059.63259 27832 394a3413f695bbfe478ec2489249afb5 ""
+  "/Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/permutation_both.png" 1776455141.9911 26381 f3841dc8610400406ef74191b72047db ""
+  "/Users/lucdenardi/Desktop/code_lang/python/french_clear_speach/py_files/decision_tree/permutation_nasal_only.png" 1776455090.84897 29494 b4587658190b62d26eaf95f90f0fddf9 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/adobe/helvetic/phvb7t.tfm" 1136768653 2240 eb56c13537f4d8a0bd3fafc25572b1bd ""
@@ -61,8 +64,8 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1769366432 5467155 19efa205003f9ecad95fbbaa6ff24da1 ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1741450574 3345740 46b66fdb0378f7bf5921b5eabf1762b8 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "main.aux" 1776454483.91793 2366 445cfa6dd7ed9404d3121efa54a0a202 "pdflatex"
-  "main.tex" 1776454482.80183 5991 ef2452b2b762515b0b83d0e2ddc83a94 ""
+  "main.aux" 1776455446.89982 3977 65937cb2fd76346a662d2242f33d51ab "pdflatex"
+  "main.tex" 1776455444.8832 10210 254e2f72318a12035315c6224ea3b02c ""
   (generated)
   "main.aux"
   "main.log"
