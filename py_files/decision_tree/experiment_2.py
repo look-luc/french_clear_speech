@@ -9,62 +9,51 @@ from show_tree import importance_trees, permutation
 warnings.filterwarnings('ignore')
 
 def main():
-    controll_data = pd.read_csv("../../data/full_data.csv").drop("clarity", axis=1)
+    controll_data = pd.read_csv("../../data/append_dur.csv").drop("clarity", axis=1)
 
     full_data = controll_data[controll_data["timepoint"] == 3]
 
-    nasal_appendix = full_data.drop(columns=["timepoint", "appendix", "creak_app", "target"])
-    nasal_target = full_data["target"]
+    data = full_data.drop(columns=["timepoint", "appendix", "creak_app", "target"])
+    data_target = full_data["target"]
 
-    creak_appendix = full_data.drop(columns=["timepoint", "appendix", "nasal_app", "target"])
-    creak_target = full_data["target"]
+    X_train, X_test, y_train, y_test = train_test_split(data, data_target, test_size=0.2, random_state=42)
 
-    both = full_data.drop(columns=["timepoint", "vwl_duration","appendix_dur", "appendix", "target"])
-    both_target = full_data["target"]
+    regression_model = rand_forest_regression.RandomForest_nasal(
+        x_train=X_train,
+        x_test=X_test,
+        y_train=y_train,
+        y_test=y_test,
+        num_estimators=1000,
+        depth=30
+    )
 
-    data = [nasal_appendix, creak_appendix, both]
-    targets = [nasal_target, creak_target, both_target]
-    exp = ["nasal_only", "creak_only", "both"]
+    regression_model.modeling()
+    accuracy, report, oob = regression_model.prediction()
 
-    for x, y, experiment in zip(data, targets, exp):
-        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    with open(f"sep_dur_scores.txt", "w") as file:
+        file.write(f"Validation Accuracy: {accuracy:.4f}\n")
+        file.write(f"OOB Score:           {oob:.4f}\n")
+        file.write(f"\nClassification Report:\n{report}")
 
-        regression_model = rand_forest_regression.RandomForest_nasal(
-            x_train=X_train,
-            x_test=X_test,
-            y_train=y_train,
-            y_test=y_test,
-            num_estimators=1000,
-            depth=30
-        )
+    importance_trees(
+        regression_model,
+        "MDI Feature Importance",
+        f"importance_sep_dur",
+        "features",
+        "Mean decrease in impurity",
+        data
+    )
 
-        regression_model.modeling()
-        accuracy, report, oob = regression_model.prediction()
-
-        with open(f"{experiment}_scores.txt", "w") as file:
-            file.write(f"Validation Accuracy: {accuracy:.4f}\n")
-            file.write(f"OOB Score:           {oob:.4f}\n")
-            file.write(f"\nClassification Report:\n{report}")
-
-        importance_trees(
-            regression_model,
-            "MDI Feature Importance",
-            f"importance_{experiment}",
-            "features",
-            "Mean decrease in impurity",
-            x
-        )
-
-        permutation(
-            regression_model.model,
-            "Importance features via permutation on full model",
-            f"permutation_{experiment}",
-            "features",
-            "Mean accuracy decrease",
-            x,
-            X_test,
-            y_test,
-        )
+    permutation(
+        regression_model.model,
+        "Importance features via permutation on full model",
+        f"permutation_sep_dur",
+        "features",
+        "Mean accuracy decrease",
+        data,
+        X_test,
+        y_test,
+    )
 
     return 0
 
