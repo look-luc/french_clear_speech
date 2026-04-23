@@ -13,7 +13,7 @@ def main():
 
     full_data = controll_data[controll_data["timepoint"] == 3]
 
-    data = full_data.drop(columns=["timepoint", "appendix", "creak_app", "target"])
+    data = full_data.drop(columns=["timepoint", "vowel", "appendix", "appendix_dur", "target"])
     data_target = full_data["target"]
 
     X_train, X_test, y_train, y_test = train_test_split(data, data_target, test_size=0.2, random_state=42)
