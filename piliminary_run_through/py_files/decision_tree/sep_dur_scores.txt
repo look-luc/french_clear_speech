@@ -1,0 +1,12 @@
+Validation Accuracy: 0.6948
+OOB Score:           0.7182
+
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.72      0.68      0.70       211
+           1       0.67      0.71      0.69       192
+
+    accuracy                           0.69       403
+   macro avg       0.70      0.70      0.69       403
+weighted avg       0.70      0.69      0.69       403
