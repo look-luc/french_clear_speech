@@ -13,7 +13,20 @@ def main():
 
     full_data = controll_data[controll_data["timepoint"] == 3]
 
-    data = full_data.drop(columns=["timepoint", "vowel", "appendix", "appendix_dur", "target"])
+    keep_list = ["freq_f1",
+                 "width_f1",
+                 "freq_f2",
+                 "freq_h1",
+                 "p0prominance",
+                 "a1p0",
+                 "a3p0",
+                 "vwl_amp_rms",
+                 "vwl_duration",
+                 "n_dur",
+                 "c_dur", ]
+
+    data = full_data[full_data.columns.intersection(keep_list)]
+    # .drop(columns=["timepoint", "vowel", "vwl_amp_rms", "appendix", "appendix_dur", "target"])
     data_target = full_data["target"]
 
     X_train, X_test, y_train, y_test = train_test_split(data, data_target, test_size=0.2, random_state=42)
